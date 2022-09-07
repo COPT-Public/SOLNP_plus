@@ -2,10 +2,10 @@ function [] = make_solnp()
 
 
 % change your mkl path here
-mkl_path = "F:\MKL\mkl\2021.3.0";
+mkl_path = "D:\OR\Zero-orderoptimization\Code\solnp git\SOLNP\mkl";
 
 % change your osqp path here
-osqp_path = "osqp";
+osqp_path = "D:\OR\Zero-orderoptimization\Code\solnp git\SOLNP\osqp";
 
 mkl_lib_path = mkl_path + "\lib\intel64";
 osqp_lib_path = osqp_path + "\lib";
