@@ -155,7 +155,7 @@ solnp_int SOLNP(solve)
             else if(w->cons_nm2 > 10*w->cons_nm1){
                 w->rho = 5*MAX(w->rho, SQRTF(stgs->tol));
             }
-            if(w->exit == 0 && MAX(w->obj_dif, w->cons_nm1-w->cons_nm2) && restart < stgs->re_time <= 0 && stgs->delta <= MAX(3 * stgs->tol,stgs->delta_end)){
+            if(w->exit == 0 && MAX(w->obj_dif, w->cons_nm1-w->cons_nm2) <= 0 && restart < stgs->re_time  && stgs->delta <= MAX(3 * stgs->tol,stgs->delta_end)){
                 SOLNP(scale_array)(w->l, 0, nc);
                 restart++;
                 if (stgs->noise) {

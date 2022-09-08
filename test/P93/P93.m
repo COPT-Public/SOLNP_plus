@@ -12,5 +12,6 @@ op.qpsolver = 1;
 %op.delta = 1;
 op.noise = 1;
 op.minit = 3;
+op.re_time = 5;
 info = SOLNP(cnstr,op);
 cost(info.p,inf);

@@ -3,7 +3,8 @@ clear
 prob.p0 = [-3,1,-3,1]';% + 1e-4*randn(4,1);
 prob.pbl = -10 * ones(4,1);
 prob.pbu =  10 * ones(4,1);
-op.tol = 1e-3;
+op.tol = 1e-6;
+op.tol_con = 1e-3;
 op.min_iter = 3;
 op.ls_time = 5; 
 %op.delta = 1;

@@ -9,7 +9,7 @@ op.tol_con = 1e-2;
 op.qpsolver = 1;
 %op.delta = 1e-1;
 % op.maxfev = 200;
-op.noise = 0;
+op.noise = 1;
 op.minit = 3;
 info = SOLNP(cnstr,op);
 cost(info.p,inf);

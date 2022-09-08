@@ -2,10 +2,10 @@ function [] = make_solnp()
 
 
 % change your mkl path here
-mkl_path = "D:\OR\Zero-orderoptimization\Code\solnp git\SOLNP\mkl";
+mkl_path = "C:\Program Files (x86)\Intel\oneAPI\mkl\2022.1.0";
 
 % change your osqp path here
-osqp_path = "D:\OR\Zero-orderoptimization\Code\solnp git\SOLNP\osqp";
+osqp_path = "E:\APP\osqp";
 
 mkl_lib_path = mkl_path + "\lib\intel64";
 osqp_lib_path = osqp_path + "\lib";
@@ -61,7 +61,7 @@ osqp_include = osqp_path + "\include";
 inc = [pinc,mkl_include,osqp_include];
 inc = join('-I' + inc);
 
-cmd = 'mex -g -output ' + join([mexfname, lib_path, src, inc, link]);
+cmd = 'mex -O -output ' + join([mexfname, lib_path, src, inc, link]);
 
 fprintf('%s\n',cmd);
 eval(replace(cmd, 'Program Files (x86)', "'Program Files (x86)'"));
