@@ -28,17 +28,17 @@ if platform == "win64"
         ' -lmkl_core', ' -lmkl_sequential '];
 elseif platform == "maci64"
     fprintf('Linking MKL in MacOS \n');
-    link = [link, ' -lmkl_intel_ilp64',...
+    link = [link, ' -lmkl_intel_lp64',...
         ' -lmkl_core', ' -lmkl_sequential '];
 elseif platform == "glnxa64"
     fprintf('Linking MKL in Linux \n');
-    link = [link, ' -lmkl_intel_ilp64',...
+    link = [link, ' -lmkl_intel_lp64',...
         ' -lmkl_core', ' -lmkl_sequential '];
 else
     error('Unsupported platform.\n');
 end
 
-link = [link, '-losqp.lib'];
+link = [link, '-losqp'];
 
 mexfname = 'SOLNP';
 psrc = '.\source';  
