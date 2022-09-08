@@ -7,8 +7,7 @@ extern "C" {
 
 #include "solnp.h"
 #include <math.h>
-
-
+#include<osqp.h>
 
 solnp_float SOLNP(vec_mean)
 (
@@ -159,6 +158,36 @@ void SOLNP(AB)
 solnp_float SOLNP(min)(solnp_float* a, solnp_int len);
 solnp_float SOLNP(max)(solnp_float* a, solnp_int len);
 
+c_int countA_sys
+(
+	solnp_int m,
+	solnp_int n,
+	solnp_float* A
+);
+c_int countA
+(
+	solnp_int m,
+	solnp_int n,
+	solnp_float* A
+);
+void calculate_csc_sys
+(
+	solnp_int m,
+	solnp_int n,
+	solnp_float* A,
+	c_float* A_x,
+	c_int* A_i,
+	c_int* A_p
+);
+void calculate_csc
+(
+	solnp_int m,
+	solnp_int n,
+	solnp_float* A,
+	c_float* A_x,
+	c_int* A_i,
+	c_int* A_p
+);
 #ifdef __cplusplus
 }
 #endif

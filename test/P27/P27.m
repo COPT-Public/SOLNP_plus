@@ -3,8 +3,8 @@ clear
 
 %% P27 
 prob.p0 = [2,2,2]' ;%+ 1e-4 * randn(3,1);
-op.tol = 1e-3;
-op.tol_con = 1e-2;
+op.tol = 1e-4;
+op.tol_con = 1e-3;
 op.min_iter = 3;
 rep = 1;
 f = 0;

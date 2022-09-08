@@ -501,6 +501,7 @@ solnp_int calculate_Jacob
 
     return 0;
 }
+
 solnp_int qpsolver
 (
     solnp_int n,
