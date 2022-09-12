@@ -416,7 +416,7 @@ void calculate_scaled_cost
 
     solnp_float con = calculate_infeas_unscaleob(ob, w, x, scale);
     
-    if (con <= stgs->tol_con && w->bestobj > ob->obj) {
+    if (con <= MAX(stgs->tol_con,w->bestcon) && w->bestobj > ob->obj) {
         w->bestcon = con;
         w->bestobj = ob->obj;
         memcpy(w->bestp, x, (w->n) * sizeof(solnp_float));
