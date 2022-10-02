@@ -6,7 +6,7 @@
 
 solnp_float cost_time = 0; // global cost timer
 
-#if def !(DLONG > 0)
+#if !(DLONG > 0)
 /* this memory must be freed */
 static solnp_int *cast_to_solnp_int_arr(mwIndex *arr, solnp_int len) {
     solnp_int i;
@@ -160,7 +160,7 @@ void  mexFunction(int  nlhs, mxArray* plhs[], int  nrhs, const  mxArray* prhs[])
     memset(Ipb, 0, 2 * sizeof(solnp_float));
 
     char* om = (char*)solnp_malloc(sizeof(char) * 512); // error message
-    sprintf(om, "SOLNP--> ");
+    sprintf(om, "SOLNP+--> ");
 
 
     cnstr = prhs[0];

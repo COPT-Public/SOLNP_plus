@@ -40,7 +40,7 @@ end
 
 link = [link, '-losqp'];
 
-mexfname = 'SOLNP';
+mexfname = 'SOLNP_plus';
 psrc = '.\source';  
 
 src_files = dir( [psrc '\*.c'] );
@@ -61,7 +61,7 @@ osqp_include = osqp_path + "\include";
 inc = [pinc,mkl_include,osqp_include];
 inc = join('-I' + inc);
 
-cmd = 'mex -O -output ' + join([mexfname, lib_path, src, inc, link]);
+cmd = 'mex -g -output ' + join([mexfname, lib_path, src, inc, link]);
 
 fprintf('%s\n',cmd);
 eval(replace(cmd, 'Program Files (x86)', "'Program Files (x86)'"));

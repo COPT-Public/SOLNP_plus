@@ -14,3 +14,9 @@ solnp_int SOLNP(solve_lin_sys)
     solnp_float *L,
     solnp_float *b
 );
+void SOLNP(cond)
+(
+    solnp_int n,
+    solnp_float* a,
+    solnp_float* cond
+    );

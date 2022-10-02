@@ -1,7 +1,7 @@
 #include "linalg.h"
 #include <math.h>
 #include "mkl.h"
-
+#include<osqp.h>
 /* y = mean(x) */
 solnp_float SOLNP(vec_mean)
 (
@@ -501,15 +501,8 @@ void calculate_csc
         A_p[j + 1] = count;
     }
 }
-/*
-solnp_float SOLNP(cond)
-(
-    solnp_int m,
-    solnp_int n,
-    solnp_float* a
-) 
-{
-}*/
+
+
 /*
 
 /*

@@ -483,25 +483,31 @@ solnp_int calculate_Jacob
             break;
         }
     }
-
+    solnp_float* aT = (solnp_float*)solnp_malloc(w_sub->nc * w_sub->npic * sizeof(solnp_float));
+    SOLNP(transpose)(w_sub->nc, w_sub->npic, w_sub->J->a, aT);
+    solnp_float* aaT = (solnp_float*)solnp_malloc(w_sub->nc * w_sub->nc * sizeof(solnp_float));
+    SOLNP(AB)(aaT, w_sub->J->a, aT, w_sub->nc, w_sub->npic, w_sub->nc);
+    solnp_float *cond = (solnp_float*)solnp_malloc(sizeof(solnp_float));
+    SOLNP(cond)(w_sub->nc, aaT,cond);
+    solnp_free(aT);
+    solnp_free(aaT);
     // calculate condition number
     // TODO: calculate condition number
-    // if cond(a) > 1 / EPS {
-    //     solnp_printf("SOLNP--> ");
-    //     solnp_printf("Redundant constraints were found. Poor              \n");
-    //     solnp_printf("         ");
-    //     solnp_printf("intermediate results may result.  Suggest that you  \n");
-    //     solnp_printf("         ");
-    //     solnp_printf("remove redundant constraints and re-OPTIMIZE.       \n");
-    // }
-
+     if (*cond <=  EPS) {
+         solnp_printf("SOLNP+--> ");
+         solnp_printf("Redundant constraints were found. Poor              \n");
+         solnp_printf("         ");
+         solnp_printf("intermediate results may result.  Suggest that you  \n");
+         solnp_printf("         ");
+         solnp_printf("remove redundant constraints and re-OPTIMIZE.       \n");
+     }
     // free pointers
+     solnp_free(cond);
     solnp_free(p);
     free_cost(ob);
 
     return 0;
 }
-
 solnp_int qpsolver
 (
     solnp_int n,
@@ -906,7 +912,7 @@ solnp_int find_int_feas_sol_aff
             }
 
             if (minit >= 10) {
-                solnp_printf("SOLNP--> ");
+                solnp_printf("SOLNP+--> ");
                 solnp_printf("The linearized problem has no feasible     \n");
                 solnp_printf("         ");
                 solnp_printf("solution.  The problem may not be feasible.\n");
@@ -1219,7 +1225,7 @@ void solve_qp_aff
 
         SOLNP(add_scaled_array)(u, w->p, w_sub->J->npic, 1.0);
         memcpy(p0, u, w_sub->J->npic * sizeof(solnp_float));
-        if(isnan(p0[0])) {
+        if isnan(p0[0]) {
             w->exit = 2;
         }
 
@@ -1477,9 +1483,10 @@ solnp_int SUBNP(solve)
     solnp_free(yg);
     solnp_free(sx);
     solnp_free(p0);  
+    /*
     if (reduce > MAX(stgs->tol,10*stgs->delta) && w->exit == 0) {
-        printf("SOLNP--> Minor optimization routine did not converge \n         in the specified number of minor iterations.\n         You may need to increase the number of minor iterations. \n ");
-    }
+        printf("SOLNP+--> Minor optimization routine did not converge \n         in the specified number of minor iterations.\n         You may need to increase the number of minor iterations. \n ");
+    }*/
     return 0;
 }
 

@@ -27,3 +27,20 @@ solnp_int SOLNP(solve_lin_sys)
 
     return info; // 0 if successful
 }
+
+void SOLNP(cond)
+(
+    solnp_int n,
+    solnp_float* a,
+    solnp_float* cond
+    )
+{
+    solnp_float norm = 0;
+    for (solnp_int i = 0; i < n; i++) {
+        for (solnp_int j = 0; i < n; i++) {
+            norm += ABS(a[i * n + j]);
+        }
+    }
+    LAPACKE_dpotrf(LAPACK_COL_MAJOR, 'U', n, a, n);
+    LAPACKE_dpocon(LAPACK_COL_MAJOR, 'U', n, a, n, norm, cond);
+}

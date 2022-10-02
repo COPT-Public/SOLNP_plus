@@ -155,7 +155,7 @@ solnp_int SOLNP(solve)
             else if(w->cons_nm2 > 10*w->cons_nm1){
                 w->rho = 5*MAX(w->rho, SQRTF(stgs->tol));
             }
-            if(w->exit == 0 && MAX(w->obj_dif, w->cons_nm1-w->cons_nm2) <= 0 && restart < stgs->re_time  && stgs->delta <= MAX(3 * stgs->tol,stgs->delta_end)){
+            if(w->exit == 0 && MAX(w->obj_dif, w->cons_nm1-w->cons_nm2) <= 0 && restart < stgs->re_time && stgs->delta <= MAX(3 * stgs->tol,stgs->delta_end)){
                 SOLNP(scale_array)(w->l, 0, nc);
                 restart++;
                 if (stgs->noise) {
@@ -218,26 +218,26 @@ solnp_int SOLNP(solve)
 
     if(w->cons_nm1 <= stgs->tol_con && w->obj_dif <= stgs->tol && stgs->delta <= MAX(stgs->tol,stgs->delta_end)){
         sol->status = 1;//Success
-        printf("SOLNP--> Success! Completed in %d iterations\n", i);
+        printf("SOLNP+--> Success! Completed in %d iterations\n", i);
         printf("         The infeasibility is %e.\n", w->bestcon);
     }
     else {
         if (w->exit == 1) {
             sol->status = 0;
-            printf("SOLNP--> Exiting after maximum number of function evaluation. Tolerance not achieved.\n");
+            printf("SOLNP+--> Exiting after maximum number of function evaluation. Tolerance not achieved.\n");
             printf("         The infeasibility is %e.\n", w->bestcon);
             printf("         SOLNP has restarted %d times.\n", restart);
         }else if (w->exit == 2) {
             sol->status = -3;
-            printf("SOLNP--> Exiting because of unknown error. Tolerance not achieved.\n");
+            printf("SOLNP+--> Exiting because of unknown error. Tolerance not achieved.\n");
             printf("         The infeasibility is %e.\n", w->bestcon);
         }else if (w->cons_nm1 > stgs->tol_con) {
             sol->status = -1;//Fail to find a feasible point. 
-            printf("SOLNP--> Exiting after maximum number of iterations. Tolerance not achieved.\n");
+            printf("SOLNP+--> Exiting after maximum number of iterations. Tolerance not achieved.\n");
             printf("         The infeasibility is %e. SOLNP has restarted %d times.\n", w->bestcon,restart);
         }else if (w->obj_dif > stgs->tol) {
             sol->status = -2; // Fail to converge
-            printf("SOLNP--> Exiting after maximum number of iterations. Tolerance of infeasibility achieved.\n");
+            printf("SOLNP+--> Exiting after maximum number of iterations. Tolerance of infeasibility achieved.\n");
             printf("         The infeasibility is %e. SOLNP has restarted %d times.\n", w->bestcon, restart);
             printf("         SOLNP fails to converge.\n");
         }
