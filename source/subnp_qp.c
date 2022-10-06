@@ -482,7 +482,7 @@ solnp_int calculate_Jacob
         if (w->exit == 1) {
             break;
         }
-    }/*
+    }
     solnp_float* aT = (solnp_float*)solnp_malloc(w_sub->nc * w_sub->npic * sizeof(solnp_float));
     SOLNP(transpose)(w_sub->nc, w_sub->npic, w_sub->J->a, aT);
     solnp_float* aaT = (solnp_float*)solnp_malloc(w_sub->nc * w_sub->nc * sizeof(solnp_float));
@@ -503,7 +503,6 @@ solnp_int calculate_Jacob
      }
     // free pointers
      solnp_free(cond);
-     */
     solnp_free(p);
     free_cost(ob);
 
