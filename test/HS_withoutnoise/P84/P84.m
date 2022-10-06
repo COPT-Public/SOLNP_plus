@@ -6,7 +6,7 @@ prob.ibl = [0,0,0]';
 prob.pbu = [1000,2.4,60,9.3,7]';
 prob.pbl = [0,1.2,20,9,6.5]';
 
-% op.min_iter = 3;        
+% op.min_iter = 10;        
 % op.tol = 1e-4;
 % op.ls_time = 5;
 % op.tol_con = 1e-4;rep = 1;

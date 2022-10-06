@@ -116,6 +116,8 @@ struct SOLNP_SETTINGS
       solnp_int maxfev;
       solnp_int noise;
       solnp_int qpsolver;
+      solnp_float k_r;
+      solnp_float k_i;
 };
 
 struct SOLNP_SOL

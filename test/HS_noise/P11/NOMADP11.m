@@ -5,7 +5,7 @@ con = 0;
 rep = 5;
 f = 0;
 count = 0;
-param = struct('display_degree','0','bb_output_type','OBJ PB','max_bb_eval',num2str(500*length(p0)),'min_poll_size','1e-4');
+param = struct('display_degree','0','bb_output_type','OBJ PB','max_bb_eval',num2str(500*length(p0)),'min_poll_size','1e-3');
 lb = -inf * ones(2,1);
 ub = -lb;
 rng(1);

@@ -194,6 +194,8 @@ void set_default_settings(SOLNPSettings *stgs)
       stgs->delta_end = 1e-5;
       stgs->noise = 1;
       stgs->qpsolver = 1;
+      stgs->k_i = 3.;
+      stgs->k_r = 9;
 }
 
 

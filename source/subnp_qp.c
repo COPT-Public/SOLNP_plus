@@ -482,7 +482,7 @@ solnp_int calculate_Jacob
         if (w->exit == 1) {
             break;
         }
-    }
+    }/*
     solnp_float* aT = (solnp_float*)solnp_malloc(w_sub->nc * w_sub->npic * sizeof(solnp_float));
     SOLNP(transpose)(w_sub->nc, w_sub->npic, w_sub->J->a, aT);
     solnp_float* aaT = (solnp_float*)solnp_malloc(w_sub->nc * w_sub->nc * sizeof(solnp_float));
@@ -503,6 +503,7 @@ solnp_int calculate_Jacob
      }
     // free pointers
      solnp_free(cond);
+     */
     solnp_free(p);
     free_cost(ob);
 
@@ -1066,13 +1067,13 @@ void BFGSudpate
     solnp_float sc[2];
     solnp_float* temp = (solnp_float*)solnp_malloc(w_sub->J->npic*sizeof(solnp_float));
     SOLNP(Ax)(temp, w->h, sx, w_sub->J->npic, w_sub->J->npic);
-    sc[1] = SOLNP(dot)(sx,temp, w_sub->J->npic);
-    sc[2] = SOLNP(dot)(sx, yg, w_sub->J->npic);
-    if (sc[1] * sc[2] > 0) {
+    sc[0] = SOLNP(dot)(sx,temp, w_sub->J->npic);
+    sc[1] = SOLNP(dot)(sx, yg, w_sub->J->npic);
+    if (sc[0] * sc[1] > 0) {
         memcpy(sx, temp, w_sub->J->npic * sizeof(solnp_float));
         // two rank 1 updates
-        SOLNP(rank1update)(w_sub->J->npic, w->h, -1 / sc[1], sx);
-        SOLNP(rank1update)(w_sub->J->npic, w->h, 1 / sc[2], yg);
+        SOLNP(rank1update)(w_sub->J->npic, w->h, -1 / sc[0], sx);
+        SOLNP(rank1update)(w_sub->J->npic, w->h, 1 / sc[1], yg);
     }
     solnp_free(temp);
 }
@@ -1338,10 +1339,10 @@ solnp_int linesearch
     *reduce = (*j - obn) / MAX(1 , fabs(*j));
     if (stgs->noise) {
         if (*reduce > 30 * stgs->delta) {
-            stgs->delta *= 3;
+            stgs->delta = stgs->delta * stgs->k_i;
         }
         if (*reduce < MAX(stgs->tol, 10 * stgs->delta)) {
-            stgs->delta = MAX(stgs->delta_end, stgs->delta / 9);
+            stgs->delta = MAX(stgs->delta_end, stgs->delta/stgs->k_r);
             tag = 1;
         }
     }

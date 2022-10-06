@@ -473,13 +473,22 @@ void  mexFunction(int  nlhs, mxArray* plhs[], int  nrhs, const  mxArray* prhs[])
     if (tmp != SOLNP_NULL) {
         stgs->noise = (solnp_int)*mxGetPr(tmp);
     }
+    if ((!stgs->noise) && mxGetField(op, 0, "delta") == SOLNP_NULL) {
+        stgs->delta = 1e-5;
+    }
     tmp = mxGetField(op, 0, "qpsolver");
     if (tmp != SOLNP_NULL) {
         stgs->qpsolver = (solnp_int)*mxGetPr(tmp);
     }
-    if ((!stgs->noise) && stgs->delta == 1.) {
-        stgs->delta = 1e-5;
+    tmp = mxGetField(op, 0, "k_i");
+    if (tmp != SOLNP_NULL) {
+        stgs->k_i = (solnp_float)*mxGetPr(tmp);
     }
+    tmp = mxGetField(op, 0, "k_r");
+    if (tmp != SOLNP_NULL) {
+        stgs->k_r = (solnp_float)*mxGetPr(tmp);
+    }
+   
 
     // first call of cost function to get nec
     mxArray *lhs, *rhs;
