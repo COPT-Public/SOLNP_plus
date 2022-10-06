@@ -5,10 +5,10 @@ prob.p0 = [-2 , 2 , 2 , -1 , -1]';% + 1e-3*randn(5,1);
 prob.pbl = [-2.3,-2.3,-3.2,-3.2,-3.2]';
 prob.pbu = [2.3,2.3,3.2,3.2,3.2]';
 
-op.min_iter = 3;        
-op.tol = 1e-4;
-op.ls_time = 5;
-op.tol_con = 1e-4;rep = 1;
+% op.min_iter = 3;        
+% op.tol = 1e-4;
+% op.ls_time = 5;
+% op.tol_con = 1e-4;rep = 1;
 
 
 f = 0;

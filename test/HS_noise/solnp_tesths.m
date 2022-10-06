@@ -5,7 +5,7 @@ op.tol = 1e-3;
 op.tol_con = 1e-3; 
 op.ls_time = 5;
 op.min_iter = 3;
-% op.re_time = 0;op.ls_time = 1000;op.noise = 0;
+% op.re_time = 0;op.ls_time = 1000;op.noise = 0; % The origin SOLNP setting
 rep = 50;
 data = [];
 
