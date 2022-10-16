@@ -6,7 +6,8 @@
 
 solnp_float cost_time = 0; // global cost timer
 
-#if !(DLONG > 0)
+// #if !(DLONG > 0)
+#ifndef DLONG
 /* this memory must be freed */
 static solnp_int *cast_to_solnp_int_arr(mwIndex *arr, solnp_int len) {
     solnp_int i;

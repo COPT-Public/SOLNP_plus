@@ -1,7 +1,7 @@
 #include "linalg.h"
 #include <math.h>
 #include "mkl.h"
-#include<osqp.h>
+// #include<osqp.h>
 /* y = mean(x) */
 solnp_float SOLNP(vec_mean)
 (
