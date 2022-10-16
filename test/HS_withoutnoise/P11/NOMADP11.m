@@ -2,7 +2,7 @@ clear cost
 p0 = [4.9 , .1]';
 t = 0;
 con = 0;
-rep = 1;
+rep = 50;
 f = 0;
 count = 0;
 param = struct('display_degree','0','bb_output_type','OBJ PB','max_bb_eval',num2str(500*length(p0)),'min_poll_size','1e-4');

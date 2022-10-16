@@ -4,13 +4,17 @@ opt.rhoend = 1e-3;
 t = 0;
 f = 0;
 con = 0;
-rep = 50;
+rep = 50;fail = 0;
 count = 0;rng(1);
 for i = 1:rep
     t1 = tic;
     [x,fx,oh,output] = pdfo(@fun,p0,@const,opt);
     t = t+ toc(t1);
-    con = con + constraint(x);
+    c = constraint(x);
+    if c > 1e-3
+        fail = fail+1;
+    end
+    con = con + c;
     f = f + fx;
     count = count + output.funcCount;
 end

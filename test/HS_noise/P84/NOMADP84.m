@@ -9,7 +9,6 @@ param = struct('display_degree','0','bb_output_type','OBJ PB PB PB PB PB PB','ma
 lb = [0,1.2,20,9,6.5]';
 ub = [1000,2.4,60,9.3,7]';
 s = 0;
-fu = @fun;
 for i = 1:rep
     t1 = tic;
     [x,fval,hinf,exit_status,nfeval] = nomad(@fun,p0,lb,ub,param);

@@ -488,6 +488,14 @@ void  mexFunction(int  nlhs, mxArray* plhs[], int  nrhs, const  mxArray* prhs[])
     if (tmp != SOLNP_NULL) {
         stgs->k_r = (solnp_float)*mxGetPr(tmp);
     }
+    tmp = mxGetField(op, 0, "c_r");
+    if (tmp != SOLNP_NULL) {
+        stgs->c_r = (solnp_float)*mxGetPr(tmp);
+    }
+    tmp = mxGetField(op, 0, "c_i");
+    if (tmp != SOLNP_NULL) {
+        stgs->c_i = (solnp_float)*mxGetPr(tmp);
+    }
    
 
     // first call of cost function to get nec

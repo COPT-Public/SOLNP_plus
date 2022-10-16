@@ -196,6 +196,8 @@ void set_default_settings(SOLNPSettings *stgs)
       stgs->qpsolver = 1;
       stgs->k_i = 3.;
       stgs->k_r = 9;
+      stgs->c_i = 30.;
+      stgs->c_r = 10.;
 }
 
 

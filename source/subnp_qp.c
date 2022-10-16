@@ -1337,10 +1337,10 @@ solnp_int linesearch
     }
     *reduce = (*j - obn) / MAX(1 , fabs(*j));
     if (stgs->noise) {
-        if (*reduce > 30 * stgs->delta) {
+        if (*reduce > stgs->c_i * stgs->delta) {
             stgs->delta = stgs->delta * stgs->k_i;
         }
-        if (*reduce < MAX(stgs->tol, 10 * stgs->delta)) {
+        if (*reduce < MAX(stgs->tol, stgs->c_r * stgs->delta)) {
             stgs->delta = MAX(stgs->delta_end, stgs->delta/stgs->k_r);
             tag = 1;
         }

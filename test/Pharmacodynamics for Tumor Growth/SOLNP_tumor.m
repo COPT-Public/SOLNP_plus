@@ -20,6 +20,8 @@ op.tol = 1e-8;
 op.tol_con = 1e-8;
 op.min_iter = 10;
 op.delta = 1e-1;
+op.c_i = 30;op.k_i = 3;
+op.c_r = 10;op.k_r = 9;
 
 tic
 info = SOLNP_plus(prob,op);

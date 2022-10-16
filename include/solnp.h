@@ -118,6 +118,8 @@ struct SOLNP_SETTINGS
       solnp_int qpsolver;
       solnp_float k_r;
       solnp_float k_i;
+      solnp_float c_r;
+      solnp_float c_i;
 };
 
 struct SOLNP_SOL

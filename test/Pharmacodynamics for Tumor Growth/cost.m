@@ -53,7 +53,7 @@ tmax = 200;
 %               subplot(1,2,2)
 %               plotjh(ch,"Constraint violation");
 %               hold on
-          save("200-1.1-65 data SOLNP+.mat","jh","ch",'-mat');
+%           save("200-1.1-65 data SOLNP+.mat","jh","ch",'-mat');
             end
         end
         clear tim

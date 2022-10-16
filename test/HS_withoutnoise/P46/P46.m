@@ -4,10 +4,10 @@ function [f,constraint, count,t] = P46(op,rep)
 prob.p0 = [.5*sqrt(2),1.75,.5,2,2]';% + 1e-3*randn(5,1);
 
 
-% op.min_iter = 10;        
-% op.tol = 1e-4;
-% op.ls_time = 5;
-% op.tol_con = 1e-4;rep = 1;
+op.min_iter = 10;        
+op.tol = 1e-4;
+op.ls_time = 5;
+op.tol_con = 1e-4;rep = 1;
 
 f = 0;
 constraint = 0;

@@ -6,7 +6,6 @@ nq = 4;
 vmax = 1.1;
 vcum = 65;
 tmax = 200;
-s = 1;
 e = tmax/(nq);
 x0 = ones(1,nq)*tmax/2;
 x = [x0,0.5*ones(1,nq)];

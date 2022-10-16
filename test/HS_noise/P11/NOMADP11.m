@@ -1,17 +1,17 @@
-clear cost
-p0 = [4.9 , .1]';
-t = 0;
-con = 0;
-rep = 5;
-f = 0;
-count = 0;
-param = struct('display_degree','0','bb_output_type','OBJ PB','max_bb_eval',num2str(500*length(p0)),'min_poll_size','1e-3');
-lb = -inf * ones(2,1);
-ub = -lb;
-rng(1);
+ clear cost
+% p0 = [4.9 , .1]';
+% t = 0;
+ con = 0;
+ rep = 1;
+ f = 0;
+ count = 0;
+% param = struct('display_degree','0','bb_output_type','OBJ PB','min_poll_size','1e-3');
+% lb = -inf * ones(2,1);
+% ub = -lb;
+ rng(1);
 for i = 1:rep
     t1 = tic;
-    [x,fval,hinf,exit_status,nfeval] = nomad(@fun,p0,lb,ub,param);
+    [x,fval,hinf,exit_status,nfeval] = nomad(@fun,info.p0,lb,ub,param);
     t = t+ toc(t1);
     f = f + fval;
     count = count + nfeval;

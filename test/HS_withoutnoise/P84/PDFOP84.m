@@ -5,7 +5,7 @@ opt.rhoend = 1e-4;
 t = 0;
 f = 0;
 con = 0;
-rep = 50;
+rep = 1;
 count = 0;
 s = 0;rng(1);
 for i = 1:rep
@@ -20,8 +20,6 @@ for i = 1:rep
         f = f + fx;
         count = count + output.funcCount;
     end
-
-    count = count + output.funcCount;
 end
 
 fprintf("time = %e,count = %f,obj = %e,con = %e\n",t/s,count/s,f/s,con/s);
