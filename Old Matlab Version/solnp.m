@@ -161,7 +161,7 @@ if ~isfield(op,'maxit'); op.maxit = 10; end
 if ~isfield(op,'minit'); op.minit = 10; end
 if ~isfield(op,'delta'); op.delta = 1e-5; end
 if ~isfield(op,'tol'); op.tol = 1e-4; end
-if ~isfield(op,'tolcon'); op.tol_con = 1e-3; end
+if ~isfield(op,'tol_con'); op.tol_con = 1e-3; end
 %if ~isfield(op,'random'); op.random = 0; end
 rho=max(op.rho,0); maxit=op.maxit; minit=op.minit; delta=op.delta; tol=op.tol;
 tolcon = op.tolcon;%random = op.random;
