@@ -798,7 +798,7 @@ solnp_int find_int_feas_sol_aff
 
                 // form ellipse
                 for (i = 0; i < w->nic; i++) {
-                    dx[i] = MIN(p[i] - w->pb->il[i], w->pb->iu[i] - p[i]);
+                    dx[i] = MIN(MIN(p[i] - w->pb->il[i], w->pb->iu[i] - p[i]),1e4);
                 }
                 dx[w_sub->npic] = p[w_sub->npic];
                 if (w->pb->Ipb[0] == 0) { // x is free
@@ -810,7 +810,7 @@ solnp_int find_int_feas_sol_aff
                 }
                 else { // x is not free
                     for (i = 0; i < w->n; i++) {
-                        dx[w->nic + i] = MIN(p[w->nic + i] - w->pb->pl[i], w->pb->pu[i] - p[w->nic + i]);
+                        dx[w->nic + i] = MIN(MIN(p[w->nic + i] - w->pb->pl[i], w->pb->pu[i] - p[w->nic + i]),1e4);
                     }
                 }
 
