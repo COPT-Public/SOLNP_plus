@@ -1225,7 +1225,7 @@ void solve_qp_aff
 
         SOLNP(add_scaled_array)(u, w->p, w_sub->J->npic, 1.0);
         memcpy(p0, u, w_sub->J->npic * sizeof(solnp_float));
-        if isnan(p0[0]) {
+        if (isnan(p0[0])) {
             w->exit = 2;
         }
 
