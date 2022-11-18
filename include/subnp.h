@@ -32,3 +32,5 @@ struct SUBNP_WORK
 };
 
 solnp_int subnp(SOLNPWork *w, SOLNPSettings *stgs);
+
+solnp_int subnp_qp(SOLNPWork *w, SOLNPSettings *stgs, SOLNPInfo *info);
