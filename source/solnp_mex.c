@@ -7,50 +7,47 @@
 solnp_float cost_time = 0; // global cost timer
 
 // #if !(DLONG > 0)
-#ifndef DLONG
+// #ifndef DLONG
+// // this memory must be freed 
+// static solnp_int *cast_to_solnp_int_arr(mwIndex *arr, solnp_int len) {
+//     solnp_int i;
+//     solnp_int *arr_out = (solnp_int *)solnp_malloc(sizeof(solnp_int) * len);
+//     for (i = 0; i < len; i++) {
+//         arr_out[i] = (solnp_int)arr[i];
+//     }
+//     return arr_out;
+// }
+// #endif
+
+// #if SFLOAT > 0
 /* this memory must be freed */
-static solnp_int *cast_to_solnp_int_arr(mwIndex *arr, solnp_int len) {
-    solnp_int i;
-    solnp_int *arr_out = (solnp_int *)solnp_malloc(sizeof(solnp_int) * len);
-    for (i = 0; i < len; i++) {
-        arr_out[i] = (solnp_int)arr[i];
+// static solnp_float *cast_to_solnp_float_arr(double *arr, solnp_int len) {
+//     solnp_int i;
+//     solnp_float *arr_out = (solnp_float *)solnp_malloc(sizeof(solnp_float) * len);
+//     for (i = 0; i < len; i++) {
+//         arr_out[i] = (solnp_float)arr[i];
+//     }
+//     return arr_out;
+// }
+
+// static double *cast_to_double_arr(solnp_float *arr, solnp_int len) {
+//     solnp_int i;
+//     double *arr_out = (double *)solnp_malloc(sizeof(double) * len);
+//     for (i = 0; i < len; i++) {
+//         arr_out[i] = (double)arr[i];
+//     }
+//     return arr_out;
+// }
+// #endif
+
+
+static void set_output_field(mxArray **pout, solnp_float *out, solnp_int m, solnp_int n) {
+
+    *pout = mxCreateDoubleMatrix(m, n, mxREAL);
+    for(int i=0; i<m*n; i++){
+        mxGetPr(*pout)[i] = (double)out[i];
     }
-    return arr_out;
-}
-#endif
 
-#if SFLOAT > 0
-/* this memory must be freed */
-static solnp_float *cast_to_solnp_float_arr(double *arr, solnp_int len) {
-    solnp_int i;
-    solnp_float *arr_out = (solnp_float *)solnp_malloc(sizeof(solnp_float) * len);
-    for (i = 0; i < len; i++) {
-        arr_out[i] = (solnp_float)arr[i];
-    }
-    return arr_out;
-}
-
-static double *cast_to_double_arr(solnp_float *arr, solnp_int len) {
-    solnp_int i;
-    double *arr_out = (double *)solnp_malloc(sizeof(double) * len);
-    for (i = 0; i < len; i++) {
-        arr_out[i] = (double)arr[i];
-    }
-    return arr_out;
-}
-#endif
-
-
-static void set_output_field(mxArray **pout, solnp_float *out, solnp_int len) {
-    *pout = mxCreateDoubleMatrix(0, 0, mxREAL);
-#if SFLOAT > 0
-    mxSetPr(*pout, cast_to_double_arr(out, len));
-    solnp_free(out);
-#else
-    mxSetPr(*pout, out);
-#endif
-    mxSetM(*pout, len);
-    mxSetN(*pout, 1);
 }
 
 
@@ -111,6 +108,7 @@ void  mexFunction(int  nlhs, mxArray* plhs[], int  nrhs, const  mxArray* prhs[])
     const mwSize one[1] = {1};
     const int num_sol_fields = 11;
     const char *sol_fields[] = {"p", "jh","ch", "l", "h", "ic", "iter", "count_cost","constraint","obj","status"};
+
 
     const mxArray *cnstr;
     const mxArray *op;
@@ -636,27 +634,12 @@ void  mexFunction(int  nlhs, mxArray* plhs[], int  nrhs, const  mxArray* prhs[])
     solnp_free(info);
     solnp_free(ib0_p);
 
-    /* output sol */
+
     plhs[0] = mxCreateStructArray(1, one, num_sol_fields, sol_fields);
 
     tmp = mxCreateDoubleMatrix(1, 1, mxREAL);
     mxSetField(plhs[0], 0, "iter", tmp);
     *mxGetPr(tmp) = (solnp_float)sol->iter;
-
-    set_output_field(&tmp, sol->p, np);
-    mxSetField(plhs[0], 0, "p", tmp);
-
-    set_output_field(&tmp, sol->ic, MAX(nic,1));
-    mxSetField(plhs[0], 0, "ic", tmp);
-
-    set_output_field(&tmp, sol->jh, sol->iter + 1);
-    mxSetField(plhs[0], 0, "jh", tmp);
-
-    set_output_field(&tmp, sol->ch, sol->iter + 1);
-    mxSetField(plhs[0], 0, "ch", tmp);
-
-    set_output_field(&tmp, sol->l, MAX(nc,1));
-    mxSetField(plhs[0], 0, "l", tmp);
 
     tmp = mxCreateDoubleMatrix(1, 1, mxREAL);
     mxSetField(plhs[0], 0, "count_cost", tmp);
@@ -675,17 +658,27 @@ void  mexFunction(int  nlhs, mxArray* plhs[], int  nrhs, const  mxArray* prhs[])
     *mxGetPr(tmp) = (solnp_float)sol->status;
 
 
-    /*
-        set output h
-    */
-    tmp = mxCreateDoubleMatrix(0, 0, mxREAL);
-    #if SFLOAT > 0
-        mxSetPr(tmp, cast_to_double_arr(tmp, (np+nic)*(np+nic)));
-        solnp_free(sol->h);
-    #else
-        mxSetPr(tmp, sol->h);
-    #endif
-    mxSetM(tmp, np+nic);
-    mxSetN(tmp, np+nic);
+    set_output_field(&tmp, sol->p, np, 1);
+    mxSetField(plhs[0], 0, "p", tmp);
+
+    set_output_field(&tmp, sol->ic, MAX(nic,1), 1);
+    mxSetField(plhs[0], 0, "ic", tmp);
+
+    set_output_field(&tmp, sol->jh, sol->iter + 1, 1);
+    mxSetField(plhs[0], 0, "jh", tmp);
+
+    set_output_field(&tmp, sol->ch, sol->iter + 1, 1);
+    mxSetField(plhs[0], 0, "ch", tmp);
+
+    set_output_field(&tmp, sol->l, MAX(nc,1), 1);
+    mxSetField(plhs[0], 0, "l", tmp);
+
+    set_output_field(&tmp, sol->h, np+nic, np+nic);
     mxSetField(plhs[0], 0, "h", tmp);
+
+
+
+
+
+    free_sol(sol);
 }

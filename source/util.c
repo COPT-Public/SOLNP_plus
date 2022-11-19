@@ -200,4 +200,28 @@ void set_default_settings(SOLNPSettings *stgs)
       stgs->c_r = 10.;
 }
 
+void free_sol(SOLNPSol *sol)
+{
+      if(sol){
+            if(sol->p){
+                  solnp_free(sol->p);
+            }
+            if(sol->ic){
+                  solnp_free(sol->ic);
+            }
+            if(sol->jh){
+                  solnp_free(sol->jh);
+            }
+            if(sol->ch){
+                  solnp_free(sol->ch);
+            }
+            if(sol->l){
+                  solnp_free(sol->l);
+            }
+            if(sol->h){
+                  solnp_free(sol->h);
+            }
 
+            solnp_free(sol);
+      }
+}

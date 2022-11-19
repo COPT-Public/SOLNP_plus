@@ -126,15 +126,16 @@ struct SOLNP_SOL
 {
       solnp_int iter;
       solnp_int status;
-      solnp_float *p;
-      solnp_float *ic;
-      solnp_float *jh;
-      solnp_float* ch;
-      solnp_float *l;
-      solnp_float *h;
       solnp_int count_cost;
       solnp_float constraint;
       solnp_float obj;
+      
+      solnp_float *p;
+      solnp_float *ic;
+      solnp_float *jh;
+      solnp_float *ch;
+      solnp_float *l;
+      solnp_float *h;
 };
 
 

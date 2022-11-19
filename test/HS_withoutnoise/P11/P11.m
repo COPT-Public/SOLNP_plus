@@ -5,10 +5,10 @@ prob.p0 = [4.9 , .1]';
 prob.ib0 = ones(1,1);
 prob.ibl = zeros(1,1);
 
-% op.min_iter = 3;        
-% op.tol = 1e-4;
-% op.ls_time = 5;
-% op.tol_con = 1e-4;rep = 1;
+op.min_iter = 3;        
+op.tol = 1e-4;
+op.ls_time = 5;
+op.tol_con = 1e-4;rep = 1;
 
 f = 0;
 constraint = 0;
