@@ -79,5 +79,6 @@ cmd = 'mex -output ' + join([mexfname, lib_path, src, inc, link]);
 
 fprintf('%s\n',cmd);
 eval(replace(cmd, 'Program Files (x86)', "'Program Files (x86)'"));
+addpath(pwd);
 
 end
