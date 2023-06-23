@@ -1,0 +1,3 @@
+# CONST
+INFINITY = 1e20
+TOL = 1e-8

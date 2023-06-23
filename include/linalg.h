@@ -1,12 +1,14 @@
+#pragma once
 #ifndef LINALG_H_GUARD
 #define LINALG_H_GUARD
-
+#define PI 3.14159265358979323846
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include "solnp.h"
 #include <math.h>
+#include <stdlib.h>
 #include "osqp.h"
 
 
@@ -193,6 +195,25 @@ void calculate_csc
 	c_float* A_x,
 	c_int* A_i,
 	c_int* A_p
+);
+void max_kelement
+(
+	solnp_float* array,
+	solnp_int len,
+	solnp_int k,
+	solnp_int* output
+);
+solnp_float Uniform_dis(solnp_float range);
+void Gaussian(
+	solnp_float mean,
+	solnp_float stddev,
+	solnp_int length,
+	solnp_float* x
+);
+void Uniform_sphere(
+	solnp_float* x,
+	solnp_int dim,
+	solnp_float radius
 );
 #ifdef __cplusplus
 }

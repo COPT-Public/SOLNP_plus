@@ -1,0 +1,11 @@
+.vs/
+*.mexa64
+*.mexw64
+*.mexmaci64
+*.pdb
+*.asv
+.vscode/
+.idea/
+
+.DS_Store
+__pycache__/

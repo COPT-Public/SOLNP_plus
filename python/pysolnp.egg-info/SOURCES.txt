@@ -1,0 +1,9 @@
+SOLNP_CONST.py
+pysolnp.py
+setup.py
+../build/Debug/solnp.dll
+pysolnp.egg-info/PKG-INFO
+pysolnp.egg-info/SOURCES.txt
+pysolnp.egg-info/dependency_links.txt
+pysolnp.egg-info/top_level.txt
+test/test.py

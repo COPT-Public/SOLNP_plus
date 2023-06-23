@@ -20,3 +20,15 @@ void SOLNP(cond)
     solnp_float* a,
     solnp_float* cond
     );
+void SOLNP(solve_general_lin_sys)(
+    solnp_int n,
+    solnp_float* a,
+    solnp_float* b
+);
+solnp_int SOLNP(solve_sys_lin_sys)
+(
+    solnp_int n,
+    solnp_float* a,
+    solnp_float* b,
+    solnp_int max_neg_eig
+);

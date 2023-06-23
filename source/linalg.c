@@ -1,5 +1,4 @@
 #include "linalg.h"
-#include <math.h>
 #include "mkl.h"
 // #include<osqp.h>
 /* y = mean(x) */
@@ -503,6 +502,108 @@ void calculate_csc
 }
 
 
+void max_kelement
+(
+    solnp_float* array,
+    solnp_int len,
+    solnp_int k,
+    solnp_int* output
+) {
+    solnp_int i;
+    // calculate the index of max k element in array,  
+    if (k == 0) {
+        return;
+    }
+    
+    solnp_float* a = (solnp_float*)solnp_malloc(len * sizeof(solnp_float));
+    solnp_int* index_a = (solnp_int*)solnp_malloc(len * sizeof(solnp_int));
+    memcpy(a, array, len * sizeof(solnp_float));
+
+    for (i = 0; i < len; i++) {
+        index_a[i] = i;
+    }
+
+    solnp_int pos = 0;
+
+    // bubble sort  
+
+    while (pos < k)
+    {
+        solnp_int m = a[pos];
+        solnp_int index = pos;
+        for (i = pos + 1; i < len; i++) {
+            if (m < a[i]) {
+                m = a[i];
+                index = i;
+            } 
+        }// Exchange pos and index
+        if (pos != index) {
+            solnp_int temp = index_a[index];
+            a[index] = a[pos];
+            index_a[index] = index_a[pos];
+            a[pos] = m;
+            index_a[pos] = temp;
+        }
+        pos++;
+    }
+    memcpy(output, index_a, k * sizeof(solnp_int));
+    solnp_free(a);
+    solnp_free(index_a);
+}
+
+solnp_float Uniform_dis(solnp_float range) {
+    //Generate uniform distribution in (0,range)
+    solnp_float x;
+    x = ((solnp_float)rand())/ (RAND_MAX );
+    x = x - ((solnp_float)rand()/RAND_MAX ) / (RAND_MAX);
+    x = MAX(1e-16, x);
+    if (x > 1) {
+        x = 1e-16;
+    }
+    return range*x;
+}
+
+void Gaussian(
+    solnp_float mean,
+    solnp_float stddev,
+    solnp_int length,
+    solnp_float* x
+) {
+    solnp_int i;
+    solnp_float u1, u2;
+    i = 0;
+    while (i < length) {
+        u1 = Uniform_dis(1);
+        u2 = Uniform_dis(1);
+        x[i] = sqrt(-2.0 * log(u1)) * cos(2.0 * PI * u2);
+        x[i] = mean + stddev * x[i];
+      /*  if (isnan(x[i])) {
+            x[i] = 1;
+        }*/
+       // if (i + 1 < length) {
+       //     x[i+1] = sqrt(-2.0 * log(u1)) * sin(2.0 * PI * u2);
+       //     x[i+1] = mean + stddev * x[i+1];
+       ///*     if (isnan(x[i+1])) {
+       //         x[i+1] = 1;
+       //     }*/
+       // }
+        i += 1;
+    }
+    return; 
+}
+
+void Uniform_sphere(
+    solnp_float* x,
+    solnp_int dim,
+    solnp_float radius
+)
+{
+    Gaussian(0, 1, dim, x);
+    solnp_float x_norm = SOLNP(norm)(x, dim);
+    
+    SOLNP(set_as_scaled_array)(x, x, radius / x_norm, dim);
+    return;
+}
 /*
 
 /*

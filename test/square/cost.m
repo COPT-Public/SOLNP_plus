@@ -5,12 +5,17 @@ function f = cost(x,par)
     tol = 1e-2;
   %% P6
     fopt = 0;
-    f = sum(x.^2);
+    f = 0;
+    dim = length(x);
+    for i = 1:dim
+        f = f + x(i)^2 * i^(1/2)/5;
+    end
     f = f';
     
     if exist('par','var') && par==inf
         fprintf('COST-->  Final result: F(x) = %e\n',f(1));
         fprintf('COST-->  The algorithm has called function for %d times\n',calltimes);
+        f = finaltime;
         if finaltime ~= inf
             fprintf('COST-->  The algorithm requires %d evaluations to get an optimal solution\n\n ',finaltime);
         else

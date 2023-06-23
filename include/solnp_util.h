@@ -55,7 +55,8 @@ solnp_float SOLNP(tocq)(SOLNP(timer) *t);
 
 SOLNPConstraint *malloc_constriant(solnp_int n, solnp_int nic);
 void set_default_settings(SOLNPSettings *stgs);
-SOLNPCost *malloc_cost(solnp_int nec, solnp_int nic, void *func);
+SOLNPCost *malloc_cost(solnp_int nec, solnp_int nic, void *func, void* grad, void* hess);
+
 void free_sol(SOLNPSol *sol);
 
 #ifdef __cplusplus

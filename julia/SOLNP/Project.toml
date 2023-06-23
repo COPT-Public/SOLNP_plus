@@ -1,0 +1,7 @@
+name = "SOLNP"
+uuid = "df098d0b-67c5-4004-b697-52282135532e"
+authors = ["SkyLiu0 <sky_6th@163.com>"]
+version = "0.1.0"
+
+[deps]
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
