@@ -828,15 +828,21 @@ solnp_int SUBNP(solve)(
             else
             {
                 // calculate momentum
-                solnp_float *m = (solnp_float *)solnp_malloc(w->n * sizeof(solnp_float));
+                solnp_float* m = (solnp_float*)solnp_malloc(w->n * sizeof(solnp_float));
                 memcpy(m, w->p, w->n * sizeof(solnp_float));
                 solnp_add_scaled_array(m, w->p_old, w->n, -1.);
 
                 // update old p
                 memcpy(w->p_old, w->p, w->n * sizeof(solnp_float));
 
-                // Use DRSOM update
-                mf = drsom(w, w_sub, stgs, p0, w_sub->J->g, m, w->radius, j);
+                if (SOLNP(norm)(m, w->n) > 1e-8) {
+                    // Use DRSOM update
+                    mf = drsom(w, w_sub, stgs, p0, w_sub->J->g, m, w->radius, j);
+                }
+                else {
+                    // Gradient Descent
+                    Gradient_descent(w, p0, w_sub->J->g, 1e-1);
+                }
                 solnp_free(m);
             }
         }
