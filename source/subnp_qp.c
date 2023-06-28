@@ -823,7 +823,7 @@ solnp_int SUBNP(solve)(
                 w->p_old = (solnp_float *)solnp_malloc(w->n * sizeof(solnp_float));
                 memcpy(w->p_old, w->p, w->n * sizeof(solnp_float));
                 // Gradient Descent
-                Gradient_descent(w, p0, w_sub->J->g, 1e-1);
+                Gradient_descent(w, p0, w_sub->J->g, stgs->gd_step);
             }
             else
             {
@@ -841,7 +841,7 @@ solnp_int SUBNP(solve)(
                 }
                 else {
                     // Gradient Descent
-                    Gradient_descent(w, p0, w_sub->J->g, 1e-1);
+                    Gradient_descent(w, p0, w_sub->J->g, stgs->gd_step);
                 }
                 solnp_free(m);
             }

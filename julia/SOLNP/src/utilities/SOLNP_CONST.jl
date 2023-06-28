@@ -34,4 +34,6 @@ OPT_INDEX = Dict{String,Int}([
     # 'rescue' => 1,
     "rescue" => 27,
     "drsom" => 28,
+    "cen_diff": 29,
+    "gd_step": 30,
 ])

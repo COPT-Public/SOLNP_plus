@@ -1,0 +1,3 @@
+/Users/liu/desktop/MyRepositories/SOLNP/python/build/CMakeFiles/solnp.dir
+/Users/liu/desktop/MyRepositories/SOLNP/python/build/CMakeFiles/edit_cache.dir
+/Users/liu/desktop/MyRepositories/SOLNP/python/build/CMakeFiles/rebuild_cache.dir

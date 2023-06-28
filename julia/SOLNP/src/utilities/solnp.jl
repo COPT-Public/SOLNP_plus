@@ -199,6 +199,8 @@ function checkAndFulfillOption(option, np)::Vector{Float64}
         # 'rescue' => 1,
         "rescue" => 0,
         "drsom" => 0,
+        "cen_diff":0,
+        "gd_step":1e-1,
     ])
 
     # check input options

@@ -373,6 +373,7 @@ solnp_int calculate_scaled_grad_random(
     solnp_float *x_temp = (solnp_float *)solnp_malloc(w->n * sizeof(solnp_float));
     solnp_float *diff = (solnp_float *)solnp_malloc(w->n * sizeof(solnp_float));
     SOLNPCost *ob = init_cost(w->nec, w->nic);
+    SOLNPCost* ob_backward = init_cost(w->nec, w->nic);
     solnp_int *index = SOLNP_NULL;
     solnp_int i, j, k;
 
@@ -410,19 +411,42 @@ solnp_int calculate_scaled_grad_random(
             w->ob->cost(&ob, x_temp, w->n, 1, 0);
             w->count_cost += 1;
 
+            if (stgs->cen_diff) {
+                SOLNP(add_scaled_array)
+                    (x_temp, diff, w->n, -2*stgs->delta);
+                // Estimate Gradient
+                w->ob->cost(&ob_backward, x_temp, w->n, 1, 0);
+                w->count_cost += 1;
+            }
+
             for (k = 0; k < w->n; k++)
             {
-                g[k] += (ob->obj - ob_p->obj) / stgs->delta * diff[k];
-                for (j = 1; j < w->nec + 1; j++)
-                {
-                    g[k + j * w->n] += (ob->ec[j - 1] - ob_p->ec[j - 1]) / stgs->delta * diff[k];
+                if (stgs->cen_diff) {
+                    // Use CENTRE difference to calculate gradient
+                    g[k] += (ob->obj - ob_backward->obj) / (2*stgs->delta) * diff[k];
+                    for (j = 1; j < w->nec + 1; j++)
+                    {
+                        g[k + j * w->n] += (ob->ec[j - 1] - ob_backward->ec[j - 1]) / (2 * stgs->delta) * diff[k];
+                    }
+                    for (j = w->nec + 1; j < w->nec + 1 + w->nic; j++)
+                    {
+                        g[k + j * w->n] = (ob->ic[j - w->nec - 1] - ob_backward->ic[j - w->nec - 1]) / (2 * stgs->delta) * diff[k];
+                    }
                 }
-                /*  if (isnan(g[k])) {
-                      g[k] = g[k];
-                  }*/
-                for (j = w->nec + 1; j < w->nec + 1 + w->nic; j++)
-                {
-                    g[k + j * w->n] = (ob->ic[j - w->nec - 1] - ob_p->ic[j - w->nec - 1]) / stgs->delta * diff[k];
+                else {
+                    // use forward difference to calcualate gradient
+                    g[k] += (ob->obj - ob_p->obj) / stgs->delta * diff[k];
+                    for (j = 1; j < w->nec + 1; j++)
+                    {
+                        g[k + j * w->n] += (ob->ec[j - 1] - ob_p->ec[j - 1]) / stgs->delta * diff[k];
+                    }
+                    /*  if (isnan(g[k])) {
+                          g[k] = g[k];
+                      }*/
+                    for (j = w->nec + 1; j < w->nec + 1 + w->nic; j++)
+                    {
+                        g[k + j * w->n] = (ob->ic[j - w->nec - 1] - ob_p->ic[j - w->nec - 1]) / stgs->delta * diff[k];
+                    }
                 }
             }
         }
@@ -439,7 +463,17 @@ solnp_int calculate_scaled_grad_random(
             x_temp[r_ind] += stgs->delta;
             w->ob->cost(&ob, x_temp, w->n, 1, 0);
             w->count_cost += 1;
-            g[r_ind] = (ob->obj - ob_p->obj) / stgs->delta;
+            if (stgs->cen_diff) {
+                // Use CENTRE differnce to calculate the gradient
+                x_temp[r_ind] -= 2 * stgs->delta;
+                w->ob->cost(&ob_backward, x_temp, w->n, 1, 0);
+                w->count_cost += 1;
+                g[r_ind] = (ob->obj - ob_backward->obj) / (2*stgs->delta);
+            }
+            else {
+                // Use forward difference to calculate the gradient
+                g[r_ind] = (ob->obj - ob_p->obj) / stgs->delta;
+            }
         }
     }
 
@@ -474,6 +508,7 @@ solnp_int calculate_scaled_grad_random(
     solnp_free(diff);
     solnp_free(index);
     free_cost(ob);
+    free_cost(ob_backward);
 }
 
 solnp_int calculate_scaled_hess(
@@ -889,18 +924,22 @@ solnp_int calculate_ALMgradient_zero(
     SOLNPSettings *stgs,
     solnp_float *g,
     solnp_float j)
-{
+{   
+    // Calculate the gradient of Augmented Lagrangian Function
+
     SOLNPCost **obm = (SOLNPCost **)solnp_malloc(1 * sizeof(SOLNPCost *));
+    SOLNPCost** obm_backward = (SOLNPCost**)solnp_malloc(1 * sizeof(SOLNPCost*));
     solnp_int i, tag;
     tag = 1;
     solnp_int len = stgs->rescue ? w->n - 2 * w->nec : w->n;
-    solnp_float alm;
+    solnp_float alm,alm_backward;
     solnp_float infeas, temp;
     solnp_float *contemp = (solnp_float *)solnp_malloc(w->nc * sizeof(solnp_float));
     solnp_float *p = (solnp_float *)solnp_malloc(1 * w->n * sizeof(solnp_float));
     memcpy(p, &w->p[w->nic], w->n * sizeof(solnp_float));
 
     obm[0] = init_cost(w->nec, w->nic);
+    obm_backward[0] = init_cost(w->nec, w->nic);
 
     /*
        solnp_float* p = (solnp_float*)solnp_malloc(len * w->n * sizeof(solnp_float));
@@ -916,6 +955,9 @@ solnp_int calculate_ALMgradient_zero(
 
         p[i] += stgs->delta;
         calculate_scaled_cost(obm, p, w_sub->scale, stgs, w, 1);
+
+        // contemp and temp variable is used for calculate the projected alm gradient(as stop criterion)
+       
         if (w->nec)
         {
             memcpy(contemp, obm[0]->ec, w->nec * sizeof(solnp_float));
@@ -930,6 +972,7 @@ solnp_int calculate_ALMgradient_zero(
             tag = 0;
         }
 
+        // calculate the ALM function value
         alm = obm[0]->obj;
         solnp_float *ptemp = (solnp_float *)solnp_malloc(w_sub->J->npic * sizeof(solnp_float));
         memcpy(ptemp, w->p, w->nic * sizeof(solnp_float));
@@ -940,9 +983,11 @@ solnp_int calculate_ALMgradient_zero(
         }
         solnp_free(ptemp);
 
+        // calculate the infeasibility
         infeas = calculate_infeas_scaledob(obm[0], w, p, w_sub->scale);
 
         {
+            // Record the best point
             if (infeas <= stgs->tol_con && MIN(p[i] - w->pb->pl[i], w->pb->pu[i] - p[i]) > 0 && w_sub->ob_cand->obj > obm[0]->obj)
             {
                 memcpy(w_sub->p_cand, w->p, w->nic * sizeof(solnp_float));
@@ -951,7 +996,27 @@ solnp_int calculate_ALMgradient_zero(
             }
 
             // calculate gradient approximately
-            g[w->nic + i] = (alm - j) / stgs->delta;
+            if (stgs->cen_diff) {
+                //use centre difference to calculate the gradient
+                p[i] -= 2 * stgs->delta;
+                calculate_scaled_cost(obm_backward, p, w_sub->scale, stgs, w, 1);
+                alm_backward = obm_backward[0]->obj;
+                solnp_float* ptemp = (solnp_float*)solnp_malloc(w_sub->J->npic * sizeof(solnp_float));
+                memcpy(ptemp, w->p, w->nic * sizeof(solnp_float));
+                memcpy(&ptemp[w->nic], p, w->n * sizeof(solnp_float));
+                if (w_sub->nc > 0)
+                {
+                    alm_backward = calculate_ALM(obm[0], stgs, ptemp, w, w_sub);
+                }
+                solnp_free(ptemp);
+
+                g[w->nic + i] = (alm - alm_backward) / (2*stgs->delta);
+
+                p[i] += 2 * stgs->delta;
+            }
+            else {
+                g[w->nic + i] = (alm - j) / stgs->delta;
+            }
         }
         /*
         if (w->exit == 1) {
@@ -1004,8 +1069,9 @@ solnp_int calculate_ALMgradient_zero(
     solnp_free(p);
     solnp_free(contemp);
     free_cost(obm[0]);
+    free_cost(obm_backward[0]);
     solnp_free(obm);
-
+    solnp_free(obm_backward);
     return 0;
 }
 

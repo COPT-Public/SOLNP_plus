@@ -192,6 +192,8 @@ void set_default_settings(SOLNPSettings *stgs)
       stgs->rs = 0;
       stgs->scale = 1;
       stgs->drsom = 0;
+      stgs->cen_diff = 0;
+      stgs->gd_step = 1e-1;
 }
 
 void free_sol(SOLNPSol *sol)

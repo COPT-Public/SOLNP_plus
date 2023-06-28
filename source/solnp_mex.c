@@ -653,6 +653,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         stgs->tol = (solnp_float)*mxGetPr(tmp);
     }
 
+    tmp = mxGetField(op, 0, "gd_step");
+    if (tmp != SOLNP_NULL)
+    {
+        stgs->gd_step = (solnp_float)*mxGetPr(tmp);
+    }
+
     tmp = mxGetField(op, 0, "tol_con");
     if (tmp != SOLNP_NULL)
     {
@@ -736,6 +742,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     if (tmp != SOLNP_NULL)
     {
         stgs->drsom = (solnp_int)*mxGetPr(tmp);
+    }
+
+    tmp = mxGetField(op, 0, "cen_diff");
+    if (tmp != SOLNP_NULL)
+    {
+        stgs->cen_diff = (solnp_int)*mxGetPr(tmp);
     }
 
     tmp = mxGetField(op, 0, "k_i");

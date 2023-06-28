@@ -143,6 +143,8 @@ extern "C"
             solnp_int ls_way; // 1 means bisection, 2 means non-monotonic
             solnp_int bfgs;
             solnp_int rs;
+            solnp_int cen_diff;
+            solnp_float gd_step;
             solnp_int scale;
             solnp_int drsom;
       };

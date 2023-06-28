@@ -460,6 +460,8 @@ class SOLNP:
             # 'rescue': 1,
             "rescue": 0,
             "drsom": 0,
+            "cen_diff": 0,
+            "gd_step": 1e-1,
         }
         return settings
 
