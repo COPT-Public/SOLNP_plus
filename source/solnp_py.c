@@ -4,15 +4,16 @@
 
 // solnp_float cost_time = 0; // global cost timer
 
-typedef void cost_temple(double *p, double *result, int n);
-typedef void g_temple(double *p, double *result);
-typedef void h_temple(double *p, double *result);
+// typedef void py_cost_temple(double *p, double *result, int n);
+typedef void py_cost_temple(double *p, double *result);
+typedef void py_g_temple(double *p, double *result);
+typedef void py_h_temple(double *p, double *result);
 
-cost_temple *py_cost;
-g_temple *py_grad;
-h_temple *py_hess;
+py_cost_temple *py_cost;
+py_g_temple *py_grad;
+py_h_temple *py_hess;
 
-void def_python_callback(cost_temple *cost, g_temple *grad, h_temple *hess)
+void def_python_callback(py_cost_temple *cost, py_g_temple *grad, py_h_temple *hess)
 {
     // Function called by Python once
     // Defines what "py_cost" is pointing to
@@ -31,7 +32,8 @@ void C_call_python_cost(SOLNPCost **c, solnp_float *p, solnp_int np, solnp_int n
     solnp_int i, j;
 
     double *result = (double *)solnp_malloc(sizeof(double) * (1 + c[0]->nic + c[0]->nec) * nfeval);
-    py_cost(p, result, nfeval);
+    // py_cost(p, result, nfeval);
+    py_cost(p, result);
 
     for (j = 0; j < nfeval; j++)
     {
@@ -95,8 +97,8 @@ void SOLNP_C(
     solnp_float *ibu,
     solnp_float *pbl,
     solnp_float *pbu,
-    solnp_float *Ipc,
-    solnp_float *Ipb,
+    solnp_int *Ipc,
+    solnp_int *Ipb,
     solnp_float *ib0,
     solnp_float *p,
     solnp_float *op,
@@ -123,7 +125,8 @@ void SOLNP_C(
     solnp_int index, i;
     /*--------------------- construct settings ------------------------*/
     SOLNPSettings *stgs = (SOLNPSettings *)solnp_malloc(sizeof(SOLNPSettings));
-    set_default_settings(stgs);
+    SOLNP(set_default_settings)
+    (stgs, np);
     stgs->maxfev = 500 * np;
     index = 0;
 
@@ -155,6 +158,10 @@ void SOLNP_C(
     stgs->ls_way = (solnp_int)op[index++];
     stgs->rescue = (solnp_int)op[index++];
     stgs->drsom = (solnp_int)op[index++];
+    stgs->cen_diff = (solnp_int)op[index++];
+    stgs->gd_step = (solnp_int)op[index++];
+    stgs->step_ratio = (solnp_float)op[index++];
+    stgs->verbose = (solnp_int)op[index++];
 
     /*--------------------- check function from python ------------------------*/
     if (py_cost == SOLNP_NULL)
@@ -210,8 +217,8 @@ void SOLNP_C(
         memcpy(constraint->pu, pbu, np * sizeof(solnp_float));
     }
 
-    memcpy(constraint->Ipc, Ipc, 2 * sizeof(solnp_float));
-    memcpy(constraint->Ipb, Ipb, 2 * sizeof(solnp_float));
+    memcpy(constraint->Ipc, Ipc, 2 * sizeof(solnp_int));
+    memcpy(constraint->Ipb, Ipb, 2 * sizeof(solnp_int));
 
     /*--------------------- assemble input ------------------------*/
     solnp_int nc = nec + nic;
@@ -231,8 +238,8 @@ void SOLNP_C(
     (&cost_timer);
     // first call python cost function
     double *result = (double *)solnp_malloc(sizeof(double) * (nec + nic + 1));
-    py_cost(p, result, 1);
-    // cost_time += SOLNP(tocq)(&cost_timer) / 1e3;
+    // py_cost(p, result, 1);
+    py_cost(p, result);
 
     solnp_int m = nec + nic + 1;
     solnp_float *ob = (solnp_float *)solnp_malloc(sizeof(solnp_float) * m);
@@ -272,9 +279,12 @@ void SOLNP_C(
     // solnp_printf("Ipc[0]: %f\n", constraint->Ipc[0]);
     // solnp_printf("Ipc[1]: %f\n", constraint->Ipc[1]);
 
+    info->total_time = 0;
     /*--------------------- call solnp ------------------------*/
     solnp_int status = SOLNP(main)(input, cost, ib0_p, sol, info);
     /*--------------------- assemble output ------------------------*/
+    info->total_time += SOLNP(tocq)(&total_timer) / 1e3;
+
     index = 0;
 
     scalars[index++] = (solnp_float)sol->iter;
@@ -286,6 +296,7 @@ void SOLNP_C(
     scalars[index++] = (solnp_float)sol->obj;
     scalars[index++] = (solnp_float)sol->status;
     scalars[index++] = (solnp_float)info->total_time;
+    scalars[index++] = (solnp_float)info->qpsolver_time;
 
     memcpy(p_out, sol->p, np * sizeof(solnp_float));
     memcpy(best_fea_p, sol->best_fea_p, np * sizeof(solnp_float));
@@ -303,6 +314,6 @@ void SOLNP_C(
     }
 
     solnp_free(info);
-    // free_sol(sol);
+    // SOLNP(free_sol)(sol);
     solnp_printf("SOLNP+--> SOLNP finished.\n");
 }

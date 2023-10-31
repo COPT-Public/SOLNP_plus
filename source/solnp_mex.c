@@ -73,11 +73,14 @@ void mexCallMatlabCost(SOLNPCost **c, solnp_float *p, solnp_int np, solnp_int nf
     SOLNP(tic)
     (&cost_timer);
     solnp_int i, j;
-    mxArray *lhs, *rhs[3];
+    // mxArray *lhs, *rhs[3];
+    mxArray *lhs, *rhs[2];
+
+    nfeval = 1;
 
     rhs[0] = cost_fun;
     rhs[1] = mxCreateDoubleMatrix(np, nfeval, mxREAL);
-    rhs[2] = mxCreateDoubleMatrix(1, 1, mxREAL);
+    // rhs[2] = mxCreateDoubleMatrix(1, 1, mxREAL);
 
     for (j = 0; j < nfeval; j++)
     {
@@ -86,9 +89,11 @@ void mexCallMatlabCost(SOLNPCost **c, solnp_float *p, solnp_int np, solnp_int nf
             mxGetPr(rhs[1])[i + j * np] = (double)p[i + j * np];
         }
     }
-    *mxGetPr(rhs[2]) = (double)nfeval;
+    // *mxGetPr(rhs[2]) = (double)nfeval;
     lhs = SOLNP_NULL;
-    mexCallMATLAB(1, &lhs, 3, rhs, "feval");
+    // mexCallMATLAB(1, &lhs, 3, rhs, "feval");
+    mexCallMATLAB(1, &lhs, 2, rhs, "feval");
+
     for (j = 0; j < nfeval; j++)
     {
         // double *result = mxGetPr(lhs);
@@ -270,10 +275,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     solnp_int nec = 0;
     solnp_int nc = 0;
 
-    solnp_float *Ipc = (solnp_float *)solnp_malloc(2 * sizeof(solnp_float));
-    memset(Ipc, 0, 2 * sizeof(solnp_float));
-    solnp_float *Ipb = (solnp_float *)solnp_malloc(2 * sizeof(solnp_float));
-    memset(Ipb, 0, 2 * sizeof(solnp_float));
+    solnp_int *Ipc = (solnp_int *)solnp_malloc(2 * sizeof(solnp_int));
+    memset(Ipc, 0, 2 * sizeof(solnp_int));
+    solnp_int *Ipb = (solnp_int *)solnp_malloc(2 * sizeof(solnp_int));
+    memset(Ipb, 0, 2 * sizeof(solnp_int));
 
     char *om = (char *)solnp_malloc(sizeof(char) * 512); // error message
     sprintf(om, "SOLNP+--> ");
@@ -562,8 +567,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         memcpy(constraint->pu, pbu, np * sizeof(solnp_float));
     }
 
-    memcpy(constraint->Ipc, Ipc, 2 * sizeof(solnp_float));
-    memcpy(constraint->Ipb, Ipb, 2 * sizeof(solnp_float));
+    memcpy(constraint->Ipc, Ipc, 2 * sizeof(solnp_int));
+    memcpy(constraint->Ipb, Ipb, 2 * sizeof(solnp_int));
 
     solnp_free(pbl);
     solnp_free(pbu);
@@ -576,7 +581,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     solnp_free(Ipb);
 
     SOLNPSettings *stgs = (SOLNPSettings *)solnp_malloc(sizeof(SOLNPSettings));
-    set_default_settings(stgs);
+    SOLNP(set_default_settings)
+    (stgs, np);
     stgs->maxfev = 500 * np;
     op = prhs[1];
 
@@ -642,6 +648,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     {
         stgs->delta = (solnp_float)*mxGetPr(tmp);
     }
+
+    tmp = mxGetField(op, 0, "step_ratio");
+    if (tmp != SOLNP_NULL)
+    {
+        stgs->step_ratio = (solnp_float)*mxGetPr(tmp);
+    }
+
     tmp = mxGetField(op, 0, "max_fev");
     if (tmp != SOLNP_NULL)
     {
@@ -790,6 +803,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     else
     {
         sprintf(om + strlen(om), "The user does not provided cost function in the fun structure \n");
+        mexErrMsgTxt(om);
+    }
+
+    if (stgs->noise == 3 && stgs->step_ratio <= 0)
+    {
+        sprintf(om + strlen(om), "The step_ratio must be a positive number! \n");
         mexErrMsgTxt(om);
     }
 
@@ -1111,7 +1130,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     // solnp_printf("Ipc[0]: %f\n", constraint->Ipc[0]);
     // solnp_printf("Ipc[1]: %f\n", constraint->Ipc[1]);
 
-
     solnp_int status = SOLNP(main)(input, cost, ib0_p, sol, info);
 
     info->total_time += SOLNP(tocq)(&total_timer) / 1e3;
@@ -1194,7 +1212,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     mxSetField(plhs[0], 0, "h", tmp);
 
     solnp_free(info);
-    free_sol(sol);
+    SOLNP(free_sol)
+    (sol);
 
     // close function handle
     mexCallMatlabCost(SOLNP_NULL, SOLNP_NULL, 0, 0, -1, SOLNP_NULL);

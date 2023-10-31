@@ -585,7 +585,7 @@ solnp_int linesearch(
         tag = 1;
     }
     *reduce = (old_penalty_value - obn) / MAX(1, fabs(*j));
-    if (stgs->noise)
+    if (stgs->noise == 1 || stgs->noise == 3)
     {
         // change gradient calculation step size
         if (*reduce > stgs->c_i * stgs->delta)
@@ -653,7 +653,8 @@ solnp_int linesearch(
 solnp_int SUBNP(solve)(
     SUBNPWork *w_sub,
     SOLNPWork *w,
-    SOLNPSettings *stgs)
+    SOLNPSettings *stgs,
+    SOLNPInfo *info)
 {
     solnp_int minit = 0;
     /* scale procedure */
@@ -713,11 +714,11 @@ solnp_int SUBNP(solve)(
     {
         if (stgs->qpsolver == 1)
         {
-            find_int_feas_sol_aff(w_sub, w, stgs);
+            find_int_feas_sol_aff(w_sub, w, stgs, info);
         }
         else
         {
-            find_int_feas_sol_osqp(w_sub, w, stgs);
+            find_int_feas_sol_osqp(w_sub, w, stgs, info);
         }
     }
     // recalculate cost if find new solution p
@@ -743,7 +744,15 @@ solnp_int SUBNP(solve)(
     solnp_float *y = (solnp_float *)solnp_calloc(w->nc, sizeof(solnp_float));
     solnp_float reduce;
     memcpy(p0, w->p, w_sub->J->npic * sizeof(solnp_float));
-
+    if (stgs->noise == 2)
+    {
+        // Use sampling to decide delta
+        solnp_float delta = calculate_delta(7, j, w->p, w_sub, w, stgs);
+        if (delta > 0)
+        {
+            stgs->delta = delta;
+        }
+    }
     while (minit < stgs->min_iter)
     {
         if (minit > 0)
@@ -791,13 +800,13 @@ solnp_int SUBNP(solve)(
         {
             if (stgs->hess)
             {
-                solve_qp_aff(w, w_sub, p0, y, w_sub->J->g, 2);
+                solve_qp_aff(w, w_sub, p0, y, w_sub->J->g, 2, info);
             }
             else
             {
                 if (stgs->bfgs)
                 {
-                    solve_qp_aff(w, w_sub, p0, y, w_sub->J->g, 1);
+                    solve_qp_aff(w, w_sub, p0, y, w_sub->J->g, 1, info);
                 }
             }
         }
@@ -805,13 +814,13 @@ solnp_int SUBNP(solve)(
         {
             if (stgs->hess)
             {
-                solve_qp_aff(w, w_sub, p0, y, w_sub->J->g, 2);
+                solve_qp_aff(w, w_sub, p0, y, w_sub->J->g, 2, info);
             }
             else
             {
                 if (stgs->bfgs)
                 {
-                    solve_qp_osqp(w, w_sub, p0, y, w_sub->J->g);
+                    solve_qp_osqp(w, w_sub, p0, y, w_sub->J->g, info);
                 }
             }
         }
@@ -828,18 +837,20 @@ solnp_int SUBNP(solve)(
             else
             {
                 // calculate momentum
-                solnp_float* m = (solnp_float*)solnp_malloc(w->n * sizeof(solnp_float));
+                solnp_float *m = (solnp_float *)solnp_malloc(w->n * sizeof(solnp_float));
                 memcpy(m, w->p, w->n * sizeof(solnp_float));
                 solnp_add_scaled_array(m, w->p_old, w->n, -1.);
 
                 // update old p
                 memcpy(w->p_old, w->p, w->n * sizeof(solnp_float));
 
-                if (SOLNP(norm)(m, w->n) > 1e-8) {
+                if (SOLNP(norm)(m, w->n) > 1e-8)
+                {
                     // Use DRSOM update
                     mf = drsom(w, w_sub, stgs, p0, w_sub->J->g, m, w->radius, j);
                 }
-                else {
+                else
+                {
                     // Gradient Descent
                     Gradient_descent(w, p0, w_sub->J->g, stgs->gd_step);
                 }
@@ -893,7 +904,7 @@ solnp_int SUBNP(solve)(
                 w->radius = MAX(w->radius / 1.5, stgs->tol / 10);
             }
         }
-        j = w->ob->obj;
+        j = calculate_ALM(w->ob, stgs, w->p, w, w_sub); // w->ob->obj;
         if (w->exit >= 1)
         {
             break;
@@ -999,7 +1010,7 @@ solnp_int subnp_qp(SOLNPWork *w, SOLNPSettings *stgs, SOLNPInfo *info)
     if (w_sub)
     {
         SUBNP(solve)
-        (w_sub, w, stgs);
+        (w_sub, w, stgs, info);
 
         SUBNP(finish)
         (w_sub, w, stgs);

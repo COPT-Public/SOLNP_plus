@@ -4,6 +4,7 @@
 #include "solnp_util.h"
 #include "rescue.h"
 #include "der_info.h"
+
 SOLNPWork *init_work(
 	SOLNPIput *input,
 	SOLNPCost *cost)
@@ -15,11 +16,13 @@ SOLNPWork *init_work(
 	else {
 		input->stgs->rescue = 0;
 	}*/
-	if (input->stgs->rs) {
+	if (input->stgs->rs)
+	{
 		input->stgs->bfgs = 0;
 		input->stgs->scale = 0;
 		input->stgs->noise = 0;
 		input->stgs->min_iter = 1;
+		input->stgs->max_iter = input->stgs->maxfev;
 		input->stgs->re_time = input->stgs->max_iter;
 	}
 	w->n = input->stgs->rescue ? input->n + 2 * cost->nec : input->n;
@@ -60,7 +63,7 @@ SOLNPWork *init_work(
 	w->exit = 0;
 
 	// Set the Random Seed
-	srand((unsigned int)time(NULL));
+	// srand((unsigned int)time(NULL));
 
 	return w;
 }
@@ -318,10 +321,12 @@ SOLNPWork *SOLNP(solve)(
 	solnp_int i = 0;
 	solnp_int j;
 	SOLNPSettings *stgs = input->stgs;
+	stgs->h = 1e-3;
 	solnp_int n = stgs->rescue ? w->n - 2 * w->nec : w->n;
 	solnp_int nc = w->nc;
 	solnp_int nec = w->nec;
 	solnp_int nic = w->nic;
+	solnp_int change_step_gap = stgs->noise == 3 ? (solnp_int)(1 + 1. / stgs->step_ratio) : 0;
 	solnp_int start_chg_l1_pen = w->nec > 3 * n ? 12 : 5;
 
 	// solnp_int rescue_tag = 0;
@@ -333,6 +338,19 @@ SOLNPWork *SOLNP(solve)(
 
 	for (i = 0; i < max_iter; i++)
 	{
+		// if (stgs->noise == 3 &&(w->count_cost > stgs->maxfev *2/3 || w->alm_crit < stgs->tol_restart/20)) {
+		//	stgs->noise = 2;
+		// }
+
+		if (stgs->noise == 3 && i % change_step_gap == 0)
+		{
+			stgs->noise = 2;
+		}
+		else if (change_step_gap != 0)
+		{
+			stgs->noise = 3;
+		}
+
 		subnp_qp(w, stgs, info);
 
 		// w->ob->cost(w->ob, &w->p[w->nic], n, i);
@@ -363,14 +381,15 @@ SOLNPWork *SOLNP(solve)(
 			w->cons_nm2 = SOLNP(norm)(w->constraint, nc);
 			w->cons_nm2_orgin = stgs->rescue ? calculate_infeas_scaledob_l1(w->ob, w, w->p) : w->cons_nm2;
 			// previous 10
-			if (w->cons_nm2 < 1 * stgs->tol_con)
+			if (w->cons_nm2 < 10 * stgs->tol_con)
 			{
 				w->rho = 0;
 				w->mu = MIN(w->mu, stgs->tol);
 			}
-			// previously 5
+
 			// adjust the ALM penalty parameter
-			if (w->cons_nm2 < w->cons_nm1 && w->cons_nm2 < 10 * stgs->tol_con)
+			// && w->cons_nm2 < 10 * stgs->tol_con
+			if (w->cons_nm2 < 5 * w->cons_nm1 && w->cons_nm2 < 10 * stgs->tol_con)
 			{
 				w->rho /= 5;
 			}
@@ -456,7 +475,9 @@ SOLNPWork *SOLNP(solve)(
 		{
 			break;
 		}
-		if ((w->cons_nm1_orgin <= stgs->tol_con && w->obj_dif <= stgs->tol) || (stgs->drsom && w->radius <= stgs->tol / 10) || w->exit)
+		// && stgs->delta <= MAX(stgs->tol,stgs->delta_end))
+
+		if ((w->cons_nm1_orgin <= stgs->tol_con && w->obj_dif <= stgs->tol) && stgs->delta <= MAX(stgs->tol, stgs->delta_end) || (stgs->drsom && w->radius <= stgs->tol / 10) || w->exit)
 		{
 			if (w->restart < stgs->re_time && (w->alm_crit > stgs->tol_restart || (w->exit != 0) || (stgs->drsom && w->radius > stgs->tol / 10)) && w->exit != 1)
 			{
@@ -468,6 +489,11 @@ SOLNPWork *SOLNP(solve)(
 				i++;
 				break;
 			}
+		}
+
+		if (input->stgs->verbose)
+		{
+			printf("SOLNP+--> Iteration %d: obj = %.4e, infeasibility = %.4e\n", i + 1, w->bestobj, w->bestcon);
 		}
 	}
 	if (w->bestobj != INFINITY)

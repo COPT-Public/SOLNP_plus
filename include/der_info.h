@@ -1,5 +1,39 @@
 #include "subnp.h"
 
+solnp_float* Est_noise(
+    solnp_int nf,
+    solnp_float* fval
+);
+
+solnp_float* Est_second_diff_sub(
+    solnp_float fval,
+    solnp_float delta,
+    solnp_float fnoise,
+    solnp_float* p,
+    solnp_float* d,
+    SUBNPWork* w_sub,
+    SOLNPWork* w,
+    SOLNPSettings* stgs
+
+);
+solnp_float Est_second_diff(
+    solnp_float fnoise,
+    solnp_float fval,
+    solnp_float* p,
+    solnp_float* d,
+    SUBNPWork* w_sub,
+    SOLNPWork* w,
+    SOLNPSettings* stgs
+);
+solnp_float calculate_delta(
+    solnp_int nf,
+    solnp_float fval,
+    solnp_float* p,
+    SUBNPWork* w_sub,
+    SOLNPWork* w,
+    SOLNPSettings* stgs
+);
+
 solnp_float calculate_infeas_scaledob
 (
     SOLNPCost* ob,

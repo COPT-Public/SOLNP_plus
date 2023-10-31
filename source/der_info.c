@@ -2,6 +2,232 @@
 #include "linalg.h"
 #include "linsys.h"
 #include "qp_solver.h"
+
+solnp_float* Est_noise(
+    solnp_int nf,
+    solnp_float* fval
+) {
+    // This subroutine implement the ECnoise program proposed by Argonne National Laboratory
+    // Jorge More' and Stefan Wild. November 2009. 
+    // The input: nf: number of points 
+    // fval: array of funciton values
+    // Output: fnoise_inform: the first entry is estimated noise. The second entry is infomration of the output.
+    solnp_float* fnoise_inform = (solnp_float*) solnp_malloc(2*sizeof(solnp_float));
+    solnp_float* level = (solnp_float*)solnp_calloc(nf - 1, sizeof(solnp_float));
+    solnp_float* dsgn = (solnp_float*)solnp_calloc(nf - 1, sizeof(solnp_float));
+    fnoise_inform[0] = 0;
+    solnp_float gamma = 1.;
+    solnp_float fmin = solnp_min(fval, nf);
+    solnp_float fmax = solnp_max(fval, nf);
+    if ((fmax-fmin)/(MAX(ABS(fmin),ABS(fmax))) > .1)
+    {
+        fnoise_inform[1] = 3;
+        solnp_free(level);
+        solnp_free(dsgn);
+        return fnoise_inform;
+    }
+    for (solnp_int j = 0; j < nf-1; j++) {
+        solnp_int count_zero = 0;
+        for (solnp_int i = 0; i < nf - j; i++) {
+            fval[i] = fval[i + 1] - fval[i];        
+        }
+        for (solnp_int i = 0; i < nf - 1; i++) {
+            if (fval[i] == 0) {
+                count_zero++;
+            }
+        }
+
+        if (j == 1 && count_zero >= nf/2) {
+            fnoise_inform[1] = 2;
+            solnp_free(level);
+            solnp_free(dsgn);
+            return fnoise_inform;
+        }
+        gamma *= 0.5 * ((j+1.) / (2 * j + 1.));
+        
+        //Compute the estimates for the noise level.
+        level[j] = SQRTF(gamma * SOLNP(norm_sq)(fval, nf - j) / (nf - j));
+
+        //Determine differences in sign.
+        solnp_float emin = SOLNP(min)(fval, nf - j);
+        solnp_float emax = SOLNP(max)(fval, nf - j);
+        if (emin * emax < 0) {
+            dsgn[j] = 1;
+        }
+    }
+
+    for (solnp_int k = 0; k < nf - 3; k++) {
+        solnp_float emin = SOLNP(min)(&level[k], 3);
+        solnp_float emax = SOLNP(max)(&level[k], 3);
+        if (emax <= 4 * emin && dsgn[k]) {
+            fnoise_inform[0] = level[k];
+            fnoise_inform[1] = 1;
+            solnp_free(level);
+            solnp_free(dsgn);
+            return fnoise_inform;
+        }
+    }
+
+    fnoise_inform[1] = 3;
+    solnp_free(level);
+    solnp_free(dsgn);
+    return fnoise_inform;
+}
+
+solnp_float* Est_second_diff_sub(
+    solnp_float fval,
+    solnp_float delta,
+    solnp_float fnoise,
+    solnp_float* p,
+    solnp_float* d,
+    SUBNPWork* w_sub,
+    SOLNPWork* w,
+    SOLNPSettings* stgs
+
+) {
+    solnp_float tau1 = 100;
+    solnp_float tau2 = 0.1;
+    solnp_float* res = (solnp_float*)solnp_malloc(2*sizeof(solnp_float));
+    solnp_float delta_h;
+    SOLNPCost** obm = (SOLNPCost**)solnp_malloc(1 * sizeof(SOLNPCost*));
+    obm[0] = init_cost(w->nec, w->nic);
+    solnp_float* ptemp = (solnp_float*)solnp_malloc(w_sub->J->npic * sizeof(solnp_float));
+    memcpy(ptemp, p, (w->nic+w->n) * sizeof(solnp_float));
+    solnp_add_scaled_array(ptemp, d, w->n + w->nic,delta);
+    calculate_scaled_cost(obm, ptemp, w_sub->scale, stgs, w, 1);
+    solnp_float alm_f = obm[0]->obj;
+
+    if (w_sub->nc > 0)
+    {
+        alm_f = calculate_ALM(obm[0], stgs, ptemp, w, w_sub);
+    }
+
+    solnp_add_scaled_array(ptemp, d, w->n + w->nic, -2*delta);
+    calculate_scaled_cost(obm, ptemp, w_sub->scale, stgs, w, 1);
+    solnp_float alm_b = obm[0]->obj;
+
+    if (w_sub->nc > 0)
+    {
+        alm_b = calculate_ALM(obm[0], stgs, ptemp, w, w_sub);
+    }
+
+    delta_h = ABS(alm_f + alm_b - fval * 2);
+    res[0] = delta_h / (delta * delta);
+    if (delta_h >= fnoise * tau1 && ABS(alm_f - fval) <= tau2 * MAX(ABS(fval), ABS(alm_f)) \
+        && ABS(alm_b - fval) <= tau2 * MAX(ABS(fval), ABS(alm_b))) {
+        res[1] = 1;
+    }
+    else {
+        res[1] = 0;
+    }
+
+    solnp_free(ptemp);
+    free_cost(obm[0]);
+    solnp_free(obm);
+    return res;
+}
+
+solnp_float Est_second_diff(
+    solnp_float fnoise,
+    solnp_float fval,
+    solnp_float* p,
+    solnp_float* d,
+    SUBNPWork* w_sub,
+    SOLNPWork* w,
+    SOLNPSettings* stgs
+) {
+    // This subroutine estimate the second-order derivative of a function  
+
+    solnp_float ha = pow(fnoise, 0.25);
+    solnp_float mu;
+    solnp_float* mua = Est_second_diff_sub(fval, ha, fnoise, p, d, w_sub, w, stgs);
+    if (mua[1] == 1){
+        mu = mua[0];
+        solnp_free(mua);
+        return mu;
+    }
+    solnp_float hb = pow(fnoise/mua[0], 0.25);
+    solnp_float* mub = Est_second_diff_sub(fval, hb, fnoise, p, d, w_sub, w, stgs);
+    if (mub[1] == 1 || ABS(mua[0]-mub[0]) <= 0.5*mub[0] ) {
+        mu = mub[0];
+        solnp_free(mua);
+        solnp_free(mub);
+        return mu;
+    }
+
+    //The noise is too large.
+    solnp_free(mua);
+    solnp_free(mub);
+    return 1;
+}
+
+solnp_float calculate_delta(
+    solnp_int nf,
+    solnp_float fval,
+    solnp_float* p,
+    SUBNPWork* w_sub,
+    SOLNPWork* w,
+    SOLNPSettings* stgs
+) {
+    // This subroutine is used to calculate the step size of finite-difference method
+    solnp_float* fvals = (solnp_float*)solnp_malloc(nf * sizeof(solnp_float));
+    SOLNPCost** obm = (SOLNPCost**)solnp_malloc(1 * sizeof(SOLNPCost*));
+    obm[0] = init_cost(w->nec, w->nic);
+    solnp_float h_default = stgs->h;
+    solnp_float* d = (solnp_float*)solnp_malloc((w->n + w->nic) * sizeof(solnp_float));
+    Uniform_sphere(d, w->n, 1);
+
+    for (solnp_int i = 0; i < (nf - 1) / 2; i++) {
+        solnp_float* ptemp = (solnp_float*)solnp_malloc(w_sub->J->npic * sizeof(solnp_float));
+        memcpy(ptemp, p, (w->nic + w->n) * sizeof(solnp_float));
+        solnp_add_scaled_array(ptemp, d, w->n, h_default);
+        calculate_scaled_cost(obm, ptemp, w_sub->scale, stgs, w, 1);
+        fvals[i] = obm[0]->obj;
+
+        if (w_sub->nc > 0)
+        {
+            fvals[i] = calculate_ALM(obm[0], stgs, ptemp, w, w_sub);
+        }
+
+        solnp_add_scaled_array(ptemp, d, w->n, -2*h_default);
+        calculate_scaled_cost(obm, ptemp, w_sub->scale, stgs, w, 1);
+        fvals[nf-i-1] = obm[0]->obj;
+
+        if (w_sub->nc > 0)
+        {
+            fvals[nf - i - 1] = calculate_ALM(obm[0], stgs, ptemp, w, w_sub);
+        }
+        solnp_free(ptemp);
+    }
+    fvals[(nf - 1) / 2] = fval;
+    // Estimate noise
+    solnp_float* res_ecnoise = Est_noise(nf, fvals);
+    if (res_ecnoise[1] != 1) {
+        if (res_ecnoise[1] == 2) {
+            stgs->h *= 10;
+        }
+        else {
+            stgs->h /= 10;
+        }
+
+        solnp_free(res_ecnoise);
+        solnp_free(d);
+        solnp_free(fvals);
+        free_cost(obm[0]);
+        return -1.;
+    }
+    // Estimate second-order derivative
+    solnp_float v2 = Est_second_diff(res_ecnoise[0], fval, p, d, w_sub, w, stgs);
+    solnp_float delta = pow(8, 0.25) * pow(res_ecnoise[0] / v2, 0.5);
+
+    solnp_free(res_ecnoise);
+    solnp_free(d);
+    solnp_free(fvals);
+    free_cost(obm[0]);
+    solnp_free(obm);
+    return delta;
+}
+
 solnp_float calculate_infeas_scaledob(
     SOLNPCost *ob,
     SOLNPWork *w,
@@ -941,15 +1167,7 @@ solnp_int calculate_ALMgradient_zero(
     obm[0] = init_cost(w->nec, w->nic);
     obm_backward[0] = init_cost(w->nec, w->nic);
 
-    /*
-       solnp_float* p = (solnp_float*)solnp_malloc(len * w->n * sizeof(solnp_float));
 
-       for (i = 0; i < len; i++) {
-           obm[i] = init_cost(w->nec, w->nic);
-           memcpy(&p[w->n * i], &w->p[w->nic], w->n * sizeof(solnp_float));
-           p[w->n * i + i] += stgs->delta;
-       }*/
-    // calculate_scaled_cost(obm, p, w_sub->scale, stgs, w, len );
     for (i = 0; i < len; i++)
     {
 

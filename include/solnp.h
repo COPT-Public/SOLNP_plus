@@ -17,6 +17,7 @@ extern "C"
       typedef struct SOLNP_INPUT SOLNPIput;
       typedef struct SOLNP_SOL SOLNPSol;
       typedef struct SOLNP_INFO SOLNPInfo;
+      typedef struct SOLNP_PROB SOLNPProb;
 
       struct SOLNP_INFO
       {
@@ -37,14 +38,14 @@ extern "C"
       // define the lower and upper bounds of decision variable and inequality constrains
       struct SOLNP_CONSTRAINT
       {
-            solnp_int n;      // dimension of decision variable
-            solnp_int nic;    // number of inequality constrains
-            solnp_float *il;  // lower bounds of inequality constrains, len of nic
-            solnp_float *iu;  // upper bounds of inequality constrains, len of nic
-            solnp_float *pl;  // lower bounds of decision variable, len of n
-            solnp_float *pu;  // upper bounds of decision variable, len of n
-            solnp_float *Ipc; // len of 2
-            solnp_float *Ipb; // len of 2
+            solnp_int n;     // dimension of decision variable
+            solnp_int nic;   // number of inequality constrains
+            solnp_float *il; // lower bounds of inequality constrains, len of nic
+            solnp_float *iu; // upper bounds of inequality constrains, len of nic
+            solnp_float *pl; // lower bounds of decision variable, len of n
+            solnp_float *pu; // upper bounds of decision variable, len of n
+            solnp_int *Ipc;  // len of 2
+            solnp_int *Ipb;  // len of 2
       };
 
       // return of cost function
@@ -147,6 +148,9 @@ extern "C"
             solnp_float gd_step;
             solnp_int scale;
             solnp_int drsom;
+            solnp_float h;          // estimate interval when noise == 2
+            solnp_float step_ratio; // balance of Byrd Step and Adaptive step
+            solnp_int verbose;
       };
 
       struct SOLNP_SOL
@@ -167,6 +171,23 @@ extern "C"
             solnp_float constraint;
             solnp_float obj;
             solnp_int restart_time;
+      };
+
+      struct SOLNP_PROB
+      {
+            /* input data of C interface */
+            solnp_int np;
+            solnp_int nic;
+            solnp_int nec;
+            solnp_int nc;
+            solnp_int *Ipc;
+            solnp_int *Ipb;
+            solnp_float *ibl;
+            solnp_float *ibu;
+            solnp_float *pbl;
+            solnp_float *pbu;
+            solnp_float *ib0;
+            solnp_float *p0;
       };
 
       solnp_int SOLNP(main)(
