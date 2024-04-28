@@ -13,7 +13,7 @@ class SOLNP:
         self,
         prob: dict,
         op: dict = None,
-        cost = None,
+        cost=None,
         grad_fun=None,
         hess_fun=None,
         l: numpy.ndarray = None,
@@ -57,6 +57,8 @@ class SOLNP:
         self.python_c_solnp = self.solnp_lib.SOLNP_C
         self.python_c_solnp.restype = None
         self.cost = cost
+        self.grad_fun = grad_fun
+        self.hess_fun = hess_fun
         np = self.prob["np"]
         nic = self.prob["nic"]
         nec = self.prob["nec"]
@@ -472,7 +474,7 @@ class SOLNP:
             "drsom": 0,
             "cen_diff": 0,
             "gd_step": 1e-1,
-            "step_ratio": 1./3,
+            "step_ratio": 1.0 / 3,
             "verbose": 1,
         }
         return settings
