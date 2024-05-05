@@ -624,7 +624,7 @@ solnp_int linesearch(
         memcpy(w->p, pt[1], w_sub->J->npic * sizeof(solnp_float));
         copySOLNPCost(w->ob, ob2);
     }
-    if (w->ob->obj > w_sub->ob_cand->obj)
+    if (w->ob->obj > w_sub->ob_cand->obj && stgs->noise != 0)
     {
         //*j = calculate_ALM(w_sub->ob_cand, stgs, w_sub->p_cand, w, w_sub);
         w_sub->ch = 1;
