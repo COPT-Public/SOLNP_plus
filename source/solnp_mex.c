@@ -110,7 +110,7 @@ void mexCallMatlabCost(SOLNPCost **c, solnp_float *p, solnp_int np, solnp_int nf
         }
     }
     mxDestroyArray(rhs[1]);
-    mxDestroyArray(rhs[2]);
+    // mxDestroyArray(rhs[2]);
 
     if (lhs != SOLNP_NULL)
     {
@@ -813,19 +813,19 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     }
 
     // first call of cost function to get nec
-    mxArray *lhs, *rhs[3];
+    mxArray *lhs, *rhs[2];
     solnp_int m;
     solnp_float *ob;
 
     rhs[0] = tmp;
     rhs[1] = mxCreateDoubleMatrix(np, 1, mxREAL);
-    rhs[2] = mxCreateDoubleMatrix(1, 1, mxREAL);
+    // rhs[2] = mxCreateDoubleMatrix(1, 1, mxREAL);
 
     for (i = 0; i < np; i++)
     {
         mxGetPr(rhs[1])[i] = p[i];
     }
-    *mxGetPr(rhs[2]) = 1;
+    // *mxGetPr(rhs[2]) = 1;
 
     lhs = SOLNP_NULL;
 
@@ -833,7 +833,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     cost_timer;
     SOLNP(tic)
     (&cost_timer);
-    mexCallMATLAB(1, &lhs, 3, rhs, "feval");
+    mexCallMATLAB(1, &lhs, 2, rhs, "feval");
     cost_time += SOLNP(tocq)(&cost_timer) / 1e3;
 
     m = mxGetM(lhs);
@@ -887,7 +887,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     nc = m - 1;
 
     mxDestroyArray(rhs[1]);
-    mxDestroyArray(rhs[2]);
+    // mxDestroyArray(rhs[2]);
     if (lhs != SOLNP_NULL)
     {
         mxDestroyArray(lhs);

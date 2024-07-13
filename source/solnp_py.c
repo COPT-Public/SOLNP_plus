@@ -115,7 +115,9 @@ void SOLNP_C(
     solnp_float *jh,
     solnp_float *ch,
     solnp_float *l_out,
-    solnp_float *h_out)
+    solnp_float *h_out,
+    solnp_float *count_h
+    )
 {
     SOLNP(timer)
     total_timer;
@@ -303,6 +305,7 @@ void SOLNP_C(
     memcpy(ic, sol->ic, MAX(nic, 1) * sizeof(solnp_float));
     memcpy(jh, sol->jh, (sol->iter + 1) * sizeof(solnp_float));
     memcpy(ch, sol->ch, (sol->iter + 1) * sizeof(solnp_float));
+    memcpy(count_h, sol->count_h, (sol->iter + 1) * sizeof(solnp_float));
     memcpy(l_out, sol->l, MAX(nic + nec, 1) * sizeof(solnp_float));
     if (stgs->bfgs)
     {

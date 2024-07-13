@@ -555,6 +555,7 @@ class SOLNP:
         ic = (c_double * max(nic, 1))()
         jh = (c_double * (self.op["max_iter"] + 1))()
         ch = (c_double * (self.op["max_iter"] + 1))()
+        count_h = (c_double * (self.op["max_iter"] + 1))()
         l_out = (c_double * max(nc, 1))()
         len_h = (n_p + nic) ** 2 if self.op["bfgs"] == 1 else 1
         h_out = (c_double * len_h)()
@@ -584,6 +585,7 @@ class SOLNP:
             ch,
             l_out,
             h_out,
+            count_h,
         )
 
         solution = {
@@ -602,6 +604,7 @@ class SOLNP:
             "ic": numpy.array(ic),
             "jh": numpy.array(jh[: int(scalars[0])]),
             "ch": numpy.array(ch[: int(scalars[0])]),
+            "count_h": numpy.array(count_h[: int(scalars[0])]),
             "l": numpy.array(l_out),
             "h": numpy.array(l_out),
         }

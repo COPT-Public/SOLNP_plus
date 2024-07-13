@@ -16,7 +16,7 @@ SOLNPWork *init_work(
 	else {
 		input->stgs->rescue = 0;
 	}*/
-	if (input->stgs->rs)
+	if (input->stgs->rs|| input->stgs->drsom)
 	{
 		input->stgs->bfgs = 0;
 		input->stgs->scale = 0;
@@ -24,6 +24,7 @@ SOLNPWork *init_work(
 		input->stgs->min_iter = 1;
 		input->stgs->max_iter = input->stgs->maxfev;
 		input->stgs->re_time = input->stgs->max_iter;
+		input->stgs->delta = input->stgs->delta_end;
 	}
 	w->n = input->stgs->rescue ? input->n + 2 * cost->nec : input->n;
 	w->nec = cost->nec;

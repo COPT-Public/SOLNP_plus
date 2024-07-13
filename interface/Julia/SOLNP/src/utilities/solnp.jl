@@ -47,6 +47,7 @@ Base.@kwdef mutable struct SOLNPResult
     ch::Vector{Float64}
     l_out::Vector{Float64}
     h_out::Vector{Float64}
+    count_h::Vector{Float64}
 end
 
 
@@ -315,6 +316,7 @@ function run_solnp_c(solnp_input::SOLNPInput)#::SOLNPResult
     l_out = zeros(Float64, max(1, solnp_input.nc))
     len_h = Bool(solnp_input.op[OPT_INDEX["bfgs"]]) ? (solnp_input.np + solnp_input.nic)^2 : 1
     h_out = zeros(Float64, len_h)
+    count_h = zeros(Float64, Int(solnp_input.op[OPT_INDEX["max_iter"]] + 1))
 
     # set cost
     # def_julia_callback_types = (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid})
@@ -323,10 +325,10 @@ function run_solnp_c(solnp_input::SOLNPInput)#::SOLNPResult
     # run solnp
     # solnp_c_types = (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Cint, Cint, Cint, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble})
 
-    ccall((:SOLNP_C, LIBSOLNP_PATH), Cvoid, (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Cint, Cint, Cint, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}), solnp_input.ibl, solnp_input.ibu, solnp_input.pbl, solnp_input.pbu, solnp_input.Ipc, solnp_input.Ipb, solnp_input.ib0, solnp_input.p, solnp_input.op, solnp_input.l, solnp_input.h, solnp_input.np, solnp_input.nic, solnp_input.nec, scalars, p_out, best_fea_p, ic, jh, ch, l_out, h_out)
+    ccall((:SOLNP_C, LIBSOLNP_PATH), Cvoid, (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Cint, Cint, Cint, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}), solnp_input.ibl, solnp_input.ibu, solnp_input.pbl, solnp_input.pbu, solnp_input.Ipc, solnp_input.Ipb, solnp_input.ib0, solnp_input.p, solnp_input.op, solnp_input.l, solnp_input.h, solnp_input.np, solnp_input.nic, solnp_input.nec, scalars, p_out, best_fea_p, ic, jh, ch, l_out, h_out, count_h)
 
     # construct result
-    solnp_result = SOLNPResult(Int(scalars[1]), Int(scalars[2]), Int(scalars[3]), Int(scalars[4]), scalars[5], Int(scalars[6]), scalars[7], Int(scalars[8]), scalars[9], p_out, best_fea_p, ic, jh, ch, l_out, h_out)
+    solnp_result = SOLNPResult(Int(scalars[1]), Int(scalars[2]), Int(scalars[3]), Int(scalars[4]), scalars[5], Int(scalars[6]), scalars[7], Int(scalars[8]), scalars[9], p_out, best_fea_p, ic, jh, ch, l_out, h_out, count_h)
     solnp_result
 end
 
