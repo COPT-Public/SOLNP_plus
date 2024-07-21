@@ -64,9 +64,10 @@ void SOLNP(solve_general_lin_sys)(
 
     solnp_int info;
     char trans = LAPACK_NOTRANS;
+    solnp_int nrhs = 1;
 
     dgetrf(&n, &n, a, &n, ipiv, &info);
-    dgetrs(&trans, &n, &n, a, &n, ipiv, b, &n, &info);
+    dgetrs(&trans, &n, &nrhs, a, &n, ipiv, b, &n, &info);
 
     solnp_free(ipiv);
     return;
