@@ -1,0 +1,5 @@
+set(OSQP_LIBRARY-NOTFOUND, OFF)
+message(NOTICE "Finding OSQP")
+message(NOTICE "OSQP detected at $ENV{OSQP_HOME}")
+set(ENV{OSQP_LIB_PATH} $ENV{OSQP_HOME}/lib)
+set(ENV{OSQP_include_PATH} $ENV{OSQP_HOME}/include)
