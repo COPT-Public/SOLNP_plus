@@ -10,7 +10,11 @@ CMake  >= 3.5.1
 
 Currently, we provide C, MATLAB, Python and Julia interface on macOS, Linux and Windows. 
 
-In terms of the linear algebra library, we provide support for both Intel MKL and open-source LAPACK. On macOS, we leverage Apple's proprietary Accelerate framework. You can decide whether to use MKL by configuring the parameter **LINK_MKL** in **CMakeLists.txt**. Before installation, you need to specify the directories for MKL(LAPACK) and OSQP in **make_solnp.m** and **CMakeLists.txt**.
+In terms of the linear algebra library, we provide support for both Intel MKL and open-source LAPACK, which should be installed in advance. On macOS, there is no need to install any linear algebra library, as we leverage Apple's proprietary **Accelerate framework**. On Linux and Windows, you can decide whether to use MKL by configuring the parameter **LINK_MKL** in **CMakeLists.txt**. Before installation, you need to specify the environment variables of OSQP directories:
+
+```bash
+export OSQP_HOME=your_path_to_osqp
+```
 
 We compile MATLAB interface within MATLAB, you can simply run the following command in MATLAB command line:
 
