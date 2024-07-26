@@ -29,8 +29,6 @@ elseif(CMAKE_HOST_UNIX)
 endif()
 #set(SOLNP_COMPILER GCC)
 
-message("if find lapack: ${LAPACK_FOUND}")
-
 set(CMAKE_C_STANDARD 11)
 
 SET(CMAKE_BUILD_TYPE "Release")
