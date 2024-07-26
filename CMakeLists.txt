@@ -13,20 +13,23 @@ if (CMAKE_HOST_WIN32)
     set(CMAKE_OSX_ARCHITECTURES x86_64)
     message("Compile SOLNP+ on Windows")
     # set(BLA_STATIC ON)
-    find_package(LAPACK REQUIRED)
+    find_package(LAPACK)
 elseif(CMAKE_HOST_APPLE)
     set(MACOS 1)
     set(CMAKE_OSX_ARCHITECTURES arm64)
     message("Compile SOLNP+ on MacOS")
     find_library(ACCELERATE_FRAMEWORK Accelerate)
+    set(LAPACK_FOUND TRUE)
 elseif(CMAKE_HOST_UNIX)
     set(LINUX 1)
     set(CMAKE_OSX_ARCHITECTURES x86_64)
     message("Compile SOLNP+ on Linux")
     # set(BLA_STATIC ON)
-    find_package(LAPACK REQUIRED)
+    find_package(LAPACK)
 endif()
 #set(SOLNP_COMPILER GCC)
+
+message("if find lapack: ${LAPACK_FOUND}")
 
 set(CMAKE_C_STANDARD 11)
 
@@ -36,13 +39,18 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 find_package(Python3)
 
-# # Configure MKL and OSQP roots
-# set(ENV{MKL_ROOT} YOUR_MKL_PATH)
-# set(ENV{LAPACK_ROOT} YOUR_LAPACK_PATH) 
+if (NOT LAPACK_FOUND)
+    message(FATAL_ERROR "LAPACK not found, please specify the path")
+    # If LAPACK can not be found automatically, 
+    # please comment the line above and
+    # set LAPACK or MKL root manually below
+    set(ENV{MKL_ROOT} YOUR_MKL_PATH)
+    set(ENV{LAPACK_ROOT} YOUR_LAPACK_PATH) 
+endif()
 
 # # Configure MKL paths
-# set(ENV{MKL_LIB_PATH} $ENV{MKL_ROOT}/lib/intel64)
-# set(ENV{MKL_include_PATH} $ENV{MKL_ROOT}/include)
+set(ENV{MKL_LIB_PATH} $ENV{MKL_ROOT}/lib/intel64)
+set(ENV{MKL_include_PATH} $ENV{MKL_ROOT}/include)
 
 # Configure osqp paths
 include(FindOSQPConf.cmake)
@@ -78,7 +86,34 @@ target_link_libraries(solnp PRIVATE $ENV{OSQP_LIB_PATH}/libosqp.a)
 if(MACOS)
     target_link_libraries(solnp PRIVATE "${ACCELERATE_FRAMEWORK}")
 else()
-    target_link_libraries(solnp PRIVATE $ENV{LAPACK_LIBRARIES})
+    if (LAPACK_FOUND)
+        target_link_libraries(solnp PRIVATE $ENV{LAPACK_LIBRARIES})
+    else()
+        if(WINDOWS)
+            if(LINK_MKL)
+                target_link_libraries(solnp $ENV{MKL_LIB_PATH}/mkl_core.lib)
+                target_link_libraries(solnp $ENV{MKL_LIB_PATH}/mkl_intel_lp64.lib)
+                target_link_libraries(solnp $ENV{MKL_LIB_PATH}/mkl_sequential.lib)
+            else()
+                target_link_libraries(solnp $ENV{LAPACK_ROOT}/lib/liblapack.a)
+                target_link_libraries(solnp $ENV{LAPACK_ROOT}/lib/libblas.a)
+                target_link_libraries(solnp gfortran)
+                target_link_libraries(solnp quadmath)
+                # Add definition for name manging
+                add_definitions("-DADD_")
+            endif()
+        else()
+            if(LINK_MKL)
+                target_link_libraries(solnp -Wl,--start-group
+                                            $ENV{MKL_LIB_PATH}/libmkl_core.a
+                                            $ENV{MKL_LIB_PATH}/libmkl_intel_lp64.a
+                                            $ENV{MKL_LIB_PATH}/libmkl_sequential.a
+                                            -Wl,--end-group)
+            else()
+                target_link_libraries(solnp $ENV{LAPACK_ROOT}/lib/liblapack.a)
+            endif()
+        endif()
+    endif()
 endif()
 
 # if(WINDOWS)
