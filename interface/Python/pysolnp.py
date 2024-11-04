@@ -337,7 +337,7 @@ class SOLNP:
 
         bound_status = True
 
-        if numpy.any(lb >= ub):
+        if numpy.any(lb > ub):
             bound_status = False
 
         return bound_status
