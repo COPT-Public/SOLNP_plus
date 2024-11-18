@@ -1371,7 +1371,7 @@ solnp_int calculate_ALMgradient_first(
         SOLNP(AB)
         (temp, temp_r, temp_l, 1, w->nc, w->n);
         SOLNP(add_scaled_array)
-        (g + w->nic, temp, w_sub->npic, 1.);
+        (g + w->nic, temp, w->n, 1.);
         solnp_free(temp);
     }
 
