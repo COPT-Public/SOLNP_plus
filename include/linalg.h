@@ -7,6 +7,7 @@ extern "C"
 {
 #endif
 
+#include "osqp.h"
 #include "solnp.h"
 #include <math.h>
 #include <stdlib.h>
@@ -123,19 +124,19 @@ extern "C"
 		solnp_int n,
 		solnp_float *A);
 	void calculate_csc_sys(
-		solnp_int m,
-		solnp_int n,
-		solnp_float *A,
-		solnp_float *A_x,
-		solnp_int *A_i,
-		solnp_int *A_p);
+		c_int m,
+		c_int n,
+		c_float *A,
+		c_float *A_x,
+		c_int *A_i,
+		c_int *A_p);
 	void calculate_csc(
-		solnp_int m,
-		solnp_int n,
-		solnp_float *A,
-		solnp_float *A_x,
-		solnp_int *A_i,
-		solnp_int *A_p);
+		c_int m,
+		c_int n,
+		c_float *A,
+		c_float *A_x,
+		c_int *A_i,
+		c_int *A_p);
 	void max_kelement(
 		solnp_float *array,
 		solnp_int len,

@@ -454,14 +454,14 @@ solnp_int countA(
 }
 
 void calculate_csc_sys(
-    solnp_int m,
-    solnp_int n,
-    solnp_float *A,
-    solnp_float *A_x,
-    solnp_int *A_i,
-    solnp_int *A_p)
+    c_int m,
+    c_int n,
+    c_float *A,
+    c_float *A_x,
+    c_int *A_i,
+    c_int *A_p)
 {
-      solnp_int i, j, count = 0;
+      c_int i, j, count = 0;
       A_p[0] = count;
       for (j = 0; j < n; j++)
       {
@@ -478,14 +478,14 @@ void calculate_csc_sys(
       }
 }
 void calculate_csc(
-    solnp_int m,
-    solnp_int n,
-    solnp_float *A,
-    solnp_float *A_x,
-    solnp_int *A_i,
-    solnp_int *A_p)
+    c_int m,
+    c_int n,
+    c_float *A,
+    c_float *A_x,
+    c_int *A_i,
+    c_int *A_p)
 {
-      solnp_int i, j, count = 0;
+      c_int i, j, count = 0;
       A_p[0] = count;
       for (j = 0; j < n; j++)
       {
