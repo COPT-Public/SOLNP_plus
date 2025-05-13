@@ -700,6 +700,21 @@ solnp_int SUBNP(solve)(
         if (w->nic > 0.5)
         {
             memcpy(&w_sub->J->a[w_sub->J->a_row - w->nic + w_sub->npic * w_sub->J->a_row], w->ob->ic, w->nic * sizeof(solnp_float));
+            for (int i = 0; i < w->nic; i++)
+            {
+                if (w->ob->ic[i] <= w->pb->il[i])
+                {
+                    w->p[i] = w->pb->il[i] + 1e-8;
+                }
+                else if (w->ob->ic[i] >= w->pb->iu[i])
+                {
+                    w->p[i] = w->pb->iu[i] - 1e-8;
+                }
+                else
+                {
+                    w->p[i] = w->ob->ic[i];
+                }
+            }
             SOLNP(add_scaled_array)
             (&w_sub->J->a[w_sub->J->a_row - w->nic + w_sub->npic * w_sub->J->a_row], w->p, w->nic, -1.0);
         }
