@@ -1,4 +1,5 @@
 from ctypes import c_double, c_int, CDLL, CFUNCTYPE, POINTER
+from scipy.optimize import minimize
 import sys
 import numpy
 import SOLNP_CONST as CONST
@@ -140,6 +141,9 @@ class SOLNP:
         self.get_settings(self.prob["np"])
         self.check_prob()
         self.check_l_h()
+        
+        if self.op["presolve"] == 1:
+            self.presolve(self.op["boundary_gap"])
 
         # self.prob["Ipc"] = [1, 1]
         # self.prob["Ipb"] = [1, 1]
@@ -361,7 +365,16 @@ class SOLNP:
         return ib0
 
     def cal_p0(self, pbl: numpy.ndarray, pbu: numpy.ndarray):
-        p0 = (pbl + pbu) / 2
+        p0 = self.prob["p0"]
+        np = self.prob["np"]
+        if p0 is None:
+            p0 = (pbl + pbu) / 2
+        else:
+            for i in range(np):
+                if p0[i] < pbl[i]:
+                    p0[i] = pbl[i] + self.op["boundary_gap"] # add gap to make sure the point is in the box
+                elif p0[i] > pbu[i]:
+                    p0[i] = pbu[i] - self.op["boundary_gap"] 
         return p0
 
     def prob_py2c(self):
@@ -476,8 +489,43 @@ class SOLNP:
             "gd_step": 1e-1,
             "step_ratio": 1.0 / 3,
             "verbose": 1,
+            "presolve": 0,
+            "presolve_tol": 1e-6,
+            "boundary_gap": 1e-8,
         }
         return settings
+    
+    def presolve(self, gap):
+        """
+        presolve the problem using scipy L-BFGS-B
+        """
+
+        nc = self.prob["nc"]
+        if nc == 0:
+            return
+        nic = self.prob["nic"]
+        nec = self.prob["nec"]
+        p0 = self.prob["p0"]
+        ibl = self.prob["ibl"]
+        ibu = self.prob["ibu"]
+
+        pbl = self.prob["pbl"] + gap # add gap to make sure the point is in the box
+        pbu = self.prob["pbu"] - gap
+
+        def cons_cost(x):
+            obj = 0
+            cost = self.cost(x)
+            for i in range(nec):
+                obj += cost[1 + i] ** 2
+            for i in range(nic):
+                if cost[1 + nec + i] > ibu[i]:
+                    obj += (cost[1 + nec + i] - ibu[i]) ** 2
+                elif cost[1 + nec + i] < ibl[i]:
+                    obj += (cost[1 + nec + i] - ibl[i]) ** 2
+            return obj
+        result = minimize(cons_cost, p0, method='L-BFGS-B', bounds=list(zip(pbl, pbu)), tol= self.op["presolve_tol"], options={'disp': False})
+        self.prob["p0"] = result.x
+        
 
     def get_settings(self, np):
         settings = self.default_settings(np)
