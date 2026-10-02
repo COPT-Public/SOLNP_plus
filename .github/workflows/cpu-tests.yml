@@ -1,0 +1,23 @@
+name: CPU build and tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  linux-cpu:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake build-essential libblas-dev liblapack-dev python3-numpy
+
+      - name: Build and test SOLNP+
+        run: bash build.sh

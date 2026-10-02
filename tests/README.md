@@ -26,8 +26,4 @@ To add a case:
 3. Add its command to build.sh (and add_test in the relevant CMakeLists if using
    CTest). Use the installed executable/consumer where applicable.
 4. Confirm a real solve passes and deliberately bad output fails; record tolerances.
-For cuPDLP-C's four-case suite, add a model in tests/data/ and an entry in
-tests/cases.json, then register it in tests/CMakeLists.txt. Compressed input is
-generated temporarily; no external benchmark downloads are required.
-
 These tests do not benchmark performance or validate optional language interfaces.
