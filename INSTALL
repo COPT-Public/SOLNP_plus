@@ -29,5 +29,5 @@ tests/logs/ contain pass=true on success, with per-invocation raw output folders
 The negative checker regression deliberately induces failures and succeeds only
 when those failures are detected. Do not count its induced solver failures as
 successful solves. See tests/README.md for expected answers and adding tests.
-No network is needed for the bundled HiGHS/OSQP source builds; installing external
+No network is needed for the bundled OSQP/QDLDL source build; installing external
 tooling and dependencies may require network access. Only source is shipped.
