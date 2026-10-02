@@ -1,0 +1,255 @@
+++ dirname build.sh
++ cd .
++ CM=/home/hkliu/codex-coinor-audit-20261001-0120/runtime/python/cmake/data/bin/cmake
++ PY=python3
++ export CUDA_VISIBLE_DEVICES=0
++ CUDA_VISIBLE_DEVICES=0
++ export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 MKL_THREADING_LAYER=SEQUENTIAL
++ OMP_NUM_THREADS=1
++ OPENBLAS_NUM_THREADS=1
++ MKL_NUM_THREADS=1
++ MKL_THREADING_LAYER=SEQUENTIAL
++ python3 tests/generate_problem.py
+Generated analytical problems in /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/examples
++ '[' -z '' ']'
++ /home/hkliu/codex-coinor-audit-20261001-0120/runtime/python/cmake/data/bin/cmake -S source/ThirdParty/osqp -B .coinor-deps/osqp-build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/osqp -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DUNITTESTS=OFF
+CMake Deprecation Warning at CMakeLists.txt:2 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+-- The C compiler identification is GNU 11.4.0
+-- The CXX compiler identification is GNU 11.4.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- We are on a Linux system
+-- Embedded is OFF
+-- Printing is ON
+-- Profiling is ON
+-- User interrupt is ON
+-- Floats are OFF
+-- Long integers (64bit) are ON
+-- Code coverage is OFF
+-- MKL Pardiso: ON
+CMake Deprecation Warning at lin_sys/direct/qdldl/qdldl_sources/CMakeLists.txt:2 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+-- Floats are OFF
+-- Long integers (64bit) are ON
+-- Configuring done (0.7s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/osqp-build
++ /home/hkliu/codex-coinor-audit-20261001-0120/runtime/python/cmake/data/bin/cmake --build .coinor-deps/osqp-build -j4
+[  3%] Building C object lin_sys/direct/CMakeFiles/linsys_pardiso.dir/pardiso/pardiso_interface.c.o
+[  3%] Building C object lin_sys/direct/qdldl/qdldl_sources/CMakeFiles/qdldlobject.dir/src/qdldl.c.o
+[  5%] Building C object lin_sys/direct/qdldl/qdldl_sources/CMakeFiles/qdldlstatic.dir/src/qdldl.c.o
+[  7%] Building C object lin_sys/direct/qdldl/CMakeFiles/linsys_qdldl.dir/amd/src/amd_1.c.o
+[  9%] Building C object lin_sys/direct/qdldl/CMakeFiles/linsys_qdldl.dir/amd/src/amd_2.c.o
+[ 11%] Linking C static library out/libqdldl.a
+[ 11%] Built target qdldlobject
+[ 13%] Building C object lin_sys/direct/qdldl/qdldl_sources/CMakeFiles/qdldl.dir/src/qdldl.c.o
+[ 15%] Building C object lin_sys/direct/CMakeFiles/linsys_pardiso.dir/pardiso/pardiso_loader.c.o
+[ 15%] Built target qdldlstatic
+[ 17%] Building C object lin_sys/direct/qdldl/CMakeFiles/linsys_qdldl.dir/amd/src/amd_aat.c.o
+[ 17%] Built target linsys_pardiso
+[ 19%] Building C object lin_sys/direct/qdldl/qdldl_sources/CMakeFiles/qdldl_example.dir/examples/example.c.o
+[ 21%] Linking C shared library out/libqdldl.so
+[ 21%] Built target qdldl
+[ 23%] Building C object lin_sys/direct/qdldl/CMakeFiles/linsys_qdldl.dir/amd/src/amd_control.c.o
+[ 25%] Building C object lin_sys/direct/qdldl/CMakeFiles/linsys_qdldl.dir/amd/src/amd_defaults.c.o
+[ 26%] Linking C executable out/qdldl_example
+[ 28%] Building C object lin_sys/direct/qdldl/CMakeFiles/linsys_qdldl.dir/amd/src/amd_info.c.o
+[ 30%] Building C object lin_sys/direct/qdldl/CMakeFiles/linsys_qdldl.dir/amd/src/amd_order.c.o
+[ 32%] Building C object lin_sys/direct/qdldl/CMakeFiles/linsys_qdldl.dir/amd/src/amd_post_tree.c.o
+[ 32%] Built target qdldl_example
+[ 34%] Building C object lin_sys/direct/qdldl/CMakeFiles/linsys_qdldl.dir/amd/src/amd_postorder.c.o
+[ 36%] Building C object lin_sys/direct/qdldl/CMakeFiles/linsys_qdldl.dir/amd/src/amd_preprocess.c.o
+[ 38%] Building C object lin_sys/direct/qdldl/CMakeFiles/linsys_qdldl.dir/amd/src/amd_valid.c.o
+[ 40%] Building C object lin_sys/direct/qdldl/CMakeFiles/linsys_qdldl.dir/amd/src/SuiteSparse_config.c.o
+[ 42%] Building C object lin_sys/direct/qdldl/CMakeFiles/linsys_qdldl.dir/qdldl_interface.c.o
+[ 42%] Built target linsys_qdldl
+[ 44%] Building C object CMakeFiles/osqpstatic.dir/src/auxil.c.o
+[ 46%] Building C object CMakeFiles/osqpstatic.dir/src/error.c.o
+[ 50%] Building C object CMakeFiles/osqp.dir/src/auxil.c.o
+[ 50%] Building C object CMakeFiles/osqpstatic.dir/src/lin_alg.c.o
+[ 51%] Building C object CMakeFiles/osqpstatic.dir/src/osqp.c.o
+[ 53%] Building C object CMakeFiles/osqp.dir/src/lin_alg.c.o
+[ 55%] Building C object CMakeFiles/osqp.dir/src/error.c.o
+[ 57%] Building C object CMakeFiles/osqpstatic.dir/src/proj.c.o
+[ 59%] Building C object CMakeFiles/osqp.dir/src/osqp.c.o
+[ 61%] Building C object CMakeFiles/osqp.dir/src/proj.c.o
+[ 63%] Building C object CMakeFiles/osqpstatic.dir/src/scaling.c.o
+[ 65%] Building C object CMakeFiles/osqp.dir/src/scaling.c.o
+[ 67%] Building C object CMakeFiles/osqpstatic.dir/src/util.c.o
+[ 69%] Building C object CMakeFiles/osqp.dir/src/util.c.o
+[ 71%] Building C object CMakeFiles/osqp.dir/src/kkt.c.o
+[ 73%] Building C object CMakeFiles/osqpstatic.dir/src/kkt.c.o
+[ 75%] Building C object CMakeFiles/osqp.dir/src/cs.c.o
+[ 76%] Building C object CMakeFiles/osqpstatic.dir/src/cs.c.o
+[ 78%] Building C object CMakeFiles/osqp.dir/src/polish.c.o
+[ 80%] Building C object CMakeFiles/osqpstatic.dir/src/polish.c.o
+[ 82%] Building C object CMakeFiles/osqp.dir/src/lin_sys.c.o
+[ 84%] Building C object CMakeFiles/osqpstatic.dir/src/lin_sys.c.o
+[ 86%] Building C object CMakeFiles/osqp.dir/src/ctrlc.c.o
+[ 88%] Building C object CMakeFiles/osqpstatic.dir/src/ctrlc.c.o
+[ 90%] Building C object CMakeFiles/osqp.dir/lin_sys/lib_handler.c.o
+[ 92%] Building C object CMakeFiles/osqpstatic.dir/lin_sys/lib_handler.c.o
+[ 94%] Linking C shared library out/libosqp.so
+[ 96%] Linking C static library out/libosqp.a
+[ 96%] Built target osqp
+[ 96%] Built target osqpstatic
+[ 98%] Building C object CMakeFiles/osqp_demo.dir/examples/osqp_demo.c.o
+[100%] Linking C executable out/osqp_demo
+[100%] Built target osqp_demo
++ /home/hkliu/codex-coinor-audit-20261001-0120/runtime/python/cmake/data/bin/cmake --install .coinor-deps/osqp-build
+-- Install configuration: "Release"
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/osqp/lib/libosqp.a
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/osqp/include/osqp/version.h
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/osqp/include/osqp/auxil.h
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/osqp/include/osqp/constants.h
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/osqp/include/osqp/error.h
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/osqp/include/osqp/glob_opts.h
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/osqp/include/osqp/lin_alg.h
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/osqp/include/osqp/osqp.h
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/osqp/include/osqp/osqp_configure.h
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/osqp/include/osqp/proj.h
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/osqp/include/osqp/scaling.h
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/osqp/include/osqp/types.h
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/osqp/include/osqp/util.h
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/osqp/include/osqp/cs.h
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/osqp/include/osqp/polish.h
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/osqp/include/osqp/lin_sys.h
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/osqp/include/osqp/ctrlc.h
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/osqp/lib/libosqp.so
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/osqp/lib/cmake/osqp/osqp-targets.cmake
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/osqp/lib/cmake/osqp/osqp-targets-release.cmake
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/osqp/lib/cmake/osqp/osqp-config.cmake
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/osqp/lib/libqdldl.a
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/osqp/include/qdldl/qdldl.h
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/osqp/include/qdldl/qdldl_types.h
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/osqp/lib/libqdldl.so
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/osqp/lib/cmake/qdldl/qdldl-targets.cmake
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/osqp/lib/cmake/qdldl/qdldl-targets-release.cmake
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/osqp/lib/cmake/qdldl/qdldl-config.cmake
++ export OSQP_HOME=/home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/osqp
++ OSQP_HOME=/home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/osqp
++ /home/hkliu/codex-coinor-audit-20261001-0120/runtime/python/cmake/data/bin/cmake -S tests -B build-coinor -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/solnp-install
+-- The C compiler identification is GNU 11.4.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Looking for sgemm_
+-- Looking for sgemm_ - not found
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- Looking for sgemm_
+-- Looking for sgemm_ - found
+-- Found BLAS: /home/hkliu/codex-coinor-audit-20261001-0120/runtime/mkl-prefix/lib/intel64/libmkl_rt.so;-lm;-ldl
+-- Looking for cheev_
+-- Looking for cheev_ - found
+-- Found LAPACK: /home/hkliu/codex-coinor-audit-20261001-0120/runtime/mkl-prefix/lib/intel64/libmkl_rt.so;-lm;-ldl;-lm;-ldl
+-- Configuring done (1.3s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/build-coinor
++ /home/hkliu/codex-coinor-audit-20261001-0120/runtime/python/cmake/data/bin/cmake --build build-coinor -j4
+[  7%] Building C object CMakeFiles/solnp.dir/home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/source/source/linalg.c.o
+[ 15%] Building C object CMakeFiles/solnp.dir/home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/source/source/der_info.c.o
+[ 30%] Building C object CMakeFiles/solnp.dir/home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/source/source/qp_solver.c.o
+[ 30%] Building C object CMakeFiles/solnp.dir/home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/source/source/linsys.c.o
+/home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/source/source/der_info.c: In function ‘calculate_scaled_cost’:
+/home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/source/source/der_info.c:413:77: warning: passing argument 4 of ‘calculate_infeas_unscaleob’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  413 |         solnp_float con = calculate_infeas_unscaleob(ob[j], w, &x[j * len], scale);
+      |                                                                             ^~~~~
+/home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/source/source/der_info.c:324:18: note: expected ‘solnp_float *’ {aka ‘double *’} but argument is of type ‘const solnp_float *’ {aka ‘const double *’}
+  324 |     solnp_float *scale)
+      |     ~~~~~~~~~~~~~^~~~~
+[ 38%] Building C object CMakeFiles/solnp.dir/home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/source/source/Rescue.c.o
+[ 46%] Building C object CMakeFiles/solnp.dir/home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/source/source/solnp_py.c.o
+[ 53%] Building C object CMakeFiles/solnp.dir/home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/source/source/solnp.c.o
+[ 61%] Building C object CMakeFiles/solnp.dir/home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/source/source/subnp_qp.c.o
+[ 69%] Building C object CMakeFiles/solnp.dir/home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/source/source/solnp_util.c.o
+[ 76%] Building C object CMakeFiles/solnp.dir/home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/source/source/solnp_c_interface.c.o
+[ 84%] Linking C shared library libsolnp.so
+[ 84%] Built target solnp
+[ 92%] Building C object CMakeFiles/test_nlp.dir/test_nlp.c.o
+[100%] Linking C executable test_nlp
+[100%] Built target test_nlp
++ /home/hkliu/codex-coinor-audit-20261001-0120/runtime/python/cmake/data/bin/cmake --install build-coinor
+-- Install configuration: "Release"
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/solnp-install/lib/libsolnp.so
+-- Set non-toolchain portion of runtime path of "/home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/solnp-install/lib/libsolnp.so" to "/home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/osqp/lib:/home/hkliu/codex-coinor-audit-20261001-0120/runtime/mkl-prefix/lib/intel64"
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/solnp-install/include/solnp
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/solnp-install/include/solnp/solnp_glbopts.h
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/solnp-install/include/solnp/der_info.h
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/solnp-install/include/solnp/solnp_util.h
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/solnp-install/include/solnp/rescue.h
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/solnp-install/include/solnp/linsys.h
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/solnp-install/include/solnp/solnp.h
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/solnp-install/include/solnp/subnp.h
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/solnp-install/include/solnp/qp_solver.h
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/solnp-install/include/solnp/linalg.h
+-- Installing: /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/.coinor-deps/solnp-install/include/solnp/def_solnp_lapack.h
++ /home/hkliu/codex-coinor-audit-20261001-0120/runtime/python/cmake/data/bin/cmake --build build-coinor --target test
+Running tests...
+Test project /home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/build-coinor
+    Start 1: coinor_nlp_install
+1/1 Test #1: coinor_nlp_install ...............   Passed    0.02 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   0.02 sec
++ python3 tests/run.py --project SOLNP_plus
+{
+  "project": "SOLNP_plus",
+  "timestamp_utc": "2026-09-30T17:46:31.473061+00:00",
+  "host": "gpu4090",
+  "primal_feasibility_tolerance": 1e-06,
+  "pass": true,
+  "status": 1,
+  "x": [
+    1.0000000000000004,
+    2.0000000000000004
+  ],
+  "objective": 3.944304526105059e-31,
+  "constraint_residual": 8.881784197001252e-16,
+  "primal_residual": 8.881784197001252e-16,
+  "solver_exit": 0,
+  "run_directory": "/home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/tests/logs/tiny/run-fuojdm12"
+}
++ bash tests/check_installed.sh
+{
+  "project": "SOLNP_plus",
+  "timestamp_utc": "2026-09-30T17:46:31.973921+00:00",
+  "host": "gpu4090",
+  "primal_feasibility_tolerance": 1e-06,
+  "pass": true,
+  "status": 1,
+  "x": [
+    1.0000000000000004,
+    2.0000000000000004
+  ],
+  "objective": 3.944304526105059e-31,
+  "constraint_residual": 8.881784197001252e-16,
+  "primal_residual": 8.881784197001252e-16,
+  "solver_exit": 0,
+  "run_directory": "/home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/tests/logs/installed-api/tiny/run-mc23sz9i"
+}

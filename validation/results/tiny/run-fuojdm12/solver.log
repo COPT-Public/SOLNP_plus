@@ -1,0 +1,12 @@
+SOLNP+--> The user does not provided gradient function of cost in the fun structure. 
+SOLNP+--> SOLNP uses zero-order method instead.
+SOLNP+--> Iteration 1: obj = 4.7949e-01, infeasibility = 0.0000e+00
+SOLNP+--> Iteration 2: obj = 4.7949e-01, infeasibility = 0.0000e+00
+SOLNP+--> Iteration 3: obj = 4.7949e-01, infeasibility = 4.4409e-16
+SOLNP+--> Iteration 4: obj = 4.7949e-01, infeasibility = 8.8818e-16
+SOLNP+--> Iteration 5: obj = 4.7949e-01, infeasibility = 8.8818e-16
+SOLNP+--> Iteration 6: obj = 6.4095e-31, infeasibility = 8.8818e-16
+SOLNP+--> Success! Completed in 7 iterations
+         The infeasibility is 8.881784e-16.
+SOLNP+--> SOLNP finished.
+COINOR_RESULT {"status":1,"x":[1.0000000000000004,2.0000000000000004],"objective":3.944304526105059e-31,"constraint_residual":8.8817841970012523e-16,"pass":true}

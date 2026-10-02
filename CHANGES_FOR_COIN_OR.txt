@@ -1,0 +1,8 @@
+SOLNP_plus preparation changes — 2026-10-01-r2
+
+Retained the C-only portable CMake harness, bundled OSQP/QDLDL.
+Required successful solver status; installed-library consumer and runtime path.
+Omitted unverified optional Old Matlab Version; clarified C API documentation.
+
+Declared project-owned copyright holder: Dongdong Ge, per submitting team.
+All existing upstream/third-party attribution retained. No forms signed or sent.

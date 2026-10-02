@@ -1,0 +1,18 @@
+{
+  "project": "SOLNP_plus",
+  "release": "20261001-r2",
+  "base_package": "SOLNP_plus-545219d-coinor",
+  "upstream": "https://github.com/COPT-Public/SOLNP_plus",
+  "reference_paper": "https://arxiv.org/abs/2210.07160",
+  "manager": {
+    "name": "Tianhao Liu",
+    "email": "tianhao.liu@sjtu.edu.cn"
+  },
+  "declared_project_owner": "Dongdong Ge",
+  "license": "MIT",
+  "declaration_date": "2026-10-01",
+  "numerical_source_scope": "Retained the C-only portable CMake harness, bundled OSQP/QDLDL.\nRequired successful solver status; installed-library consumer and runtime path.\nOmitted unverified optional Old Matlab Version; clarified C API documentation.",
+  "third_party_notice": "THIRD_PARTY_NOTICES",
+  "upstream_commit": "545219dc8f2cb44e3a663d8a6dd38eea138ea0ad",
+  "validation": "validation/SUMMARY.json"
+}

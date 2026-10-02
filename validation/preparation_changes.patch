@@ -1,0 +1,94 @@
+--- before/build.sh
++++ after/build.sh
+@@ -17,3 +17,5 @@
+ "$CM" --install build-coinor
+ "$CM" --build build-coinor --target test
+ "$PY" tests/run.py --project SOLNP_plus
++
++bash tests/check_installed.sh
+--- before/tests/CMakeLists.txt
++++ after/tests/CMakeLists.txt
+@@ -20,3 +20,6 @@
+ add_test(NAME coinor_nlp_install COMMAND test_nlp ${SOLNP_ROOT}/../examples/problem.txt)
+ install(TARGETS solnp LIBRARY DESTINATION lib)
+ install(DIRECTORY "${SOLNP_ROOT}/include/" DESTINATION include/solnp FILES_MATCHING PATTERN "*.h")
++
++# Keep installed library usable with the configured external OSQP/BLAS.
++set_target_properties(solnp PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
+--- before/tests/run.py
++++ after/tests/run.py
+@@ -1,5 +1,5 @@
+ """Installation test with independent numerical checks; run on Linux/GPU host."""
+-import argparse, datetime, json, math, os, platform, subprocess, sys
++import argparse, datetime, json, math, os, platform, subprocess, sys, tempfile
+ from pathlib import Path
+ import numpy as np
+ 
+@@ -10,7 +10,10 @@
+ p.add_argument('--binary',type=Path)
+ p.add_argument('--output',type=Path,default=Path('tests/logs/tiny'))
+ a=p.parse_args()
+-root=Path.cwd(); out=a.output.resolve(); out.mkdir(parents=True,exist_ok=True)
++root=Path.cwd(); output_root=a.output.resolve(); output_root.mkdir(parents=True,exist_ok=True)
++# Existing results never satisfy a new invocation. No user directory is deleted.
++out=Path(tempfile.mkdtemp(prefix='run-',dir=output_root))
++(output_root/'verification.json').write_text(json.dumps({'pass':False,'state':'running','run_directory':str(out)}))
+ fixture=root/'examples'
+ env=os.environ.copy()
+ env.setdefault('CUDA_VISIBLE_DEVICES','0')
+@@ -23,7 +26,10 @@
+ def finite(x): return bool(np.isfinite(np.asarray(x,dtype=float)).all())
+ def emit(x):
+     report.update(x)
+-    (out/'verification.json').write_text(json.dumps(report,indent=2,allow_nan=False))
++    report['run_directory']=str(out)
++    encoded=json.dumps(report,indent=2,allow_nan=False)
++    (out/'verification.json').write_text(encoded)
++    (output_root/'verification.json').write_text(encoded)
+     print(json.dumps(report,indent=2,allow_nan=False),flush=True)
+ report={'project':a.project,'timestamp_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+         'host':platform.node(),'primal_feasibility_tolerance':1e-6,'pass':False}
+@@ -66,7 +72,7 @@
+             r.update(objective=obj,primal_residual=pr,primal_min_eigenvalue=mineig,dual_min_eigenvalue=ds,absolute_gap=gap)
+         else:
+             x=np.array(r['x']); obj=float((x[0]-1)**2+(x[1]-2)**2); pr=float(abs(x.sum()-3))
+-            ok=ok and finite(x) and pr<=1e-6 and obj<=1e-6 and np.max(np.abs(x-[1,2]))<=1e-3
++            ok=ok and r['status']==1 and finite(x) and pr<=1e-6 and obj<=1e-6 and np.max(np.abs(x-[1,2]))<=1e-3
+             r.update(objective=obj,primal_residual=pr)
+         r.update(pass_=bool(ok),solver_exit=rc)
+         r['pass']=r.pop('pass_'); emit(r)
+--- before/tests/test_nlp.c
++++ after/tests/test_nlp.c
+@@ -29,7 +29,7 @@
+     SOLNP_PLUS(p,s,sol,info,cost,NULL,NULL,NULL,NULL);
+     double x=sol->p[0],y=sol->p[1];
+     double obj=(x-1)*(x-1)+(y-2)*(y-2), res=fabs(x+y-3);
+-    int ok=isfinite(x)&&isfinite(y)&&isfinite(sol->obj)&&
++    int ok=(sol->status==1)&&isfinite(x)&&isfinite(y)&&isfinite(sol->obj)&&
+         fabs(x-1)<1e-3&&fabs(y-2)<1e-3&&obj<1e-6&&res<1e-5&&
+         fabs(sol->obj-obj)<1e-6&&x>=lb-1e-5&&x<=ub+1e-5&&y>=lb-1e-5&&y<=ub+1e-5;
+     printf("COINOR_RESULT {\"status\":%d,\"x\":[%.17g,%.17g],\"objective\":%.17g,\"constraint_residual\":%.17g,\"pass\":%s}\n",sol->status,x,y,obj,res,ok?"true":"false");
+--- before/tests/check_installed.sh
++++ after/tests/check_installed.sh
+@@ -0,0 +1,21 @@
++#!/usr/bin/env bash
++set -euo pipefail
++cd "$(dirname "$0")/.."
++PY="${PYTHON:-python3}"
++CC="${CC:-cc}"
++mkdir -p tests/logs/installed-api
++if [ -d .coinor-deps/hdsdp-install ]; then
++  prefix="$PWD/.coinor-deps/hdsdp-install"
++  mkl_lib="${MKLROOT:?Set MKLROOT}/lib/intel64"
++  [ -d "$mkl_lib" ] || mkl_lib="$MKLROOT/lib"
++  "$CC" -O2 tests/test_sdp.c -I"$prefix/include/hdsdp" -L"$prefix/lib" -lhdsdp \
++    -L"$mkl_lib" -lmkl_rt -lm -lpthread -ldl -o tests/logs/installed-api/test_installed
++  "$PY" tests/run.py --project HDSDP --binary "$PWD/tests/logs/installed-api/test_installed" --output tests/logs/installed-api/tiny
++  "$PY" tests/run.py --project HDSDP --case trace --binary "$PWD/tests/logs/installed-api/test_installed" --output tests/logs/installed-api/trace
++else
++  prefix="$PWD/.coinor-deps/solnp-install"
++  export LD_LIBRARY_PATH="$prefix/lib:${OSQP_HOME:-$PWD/.coinor-deps/osqp}/lib:${LD_LIBRARY_PATH:-}"
++  "$CC" -O2 tests/test_nlp.c -I"$prefix/include/solnp" -L"$prefix/lib" -lsolnp -lm \
++    -o tests/logs/installed-api/test_installed
++  "$PY" tests/run.py --project SOLNP_plus --binary "$PWD/tests/logs/installed-api/test_installed" --output tests/logs/installed-api/tiny
++fi

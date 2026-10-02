@@ -1,0 +1,19 @@
+{
+  "objective": "(x-1)^2+(y-2)^2",
+  "equality": "x+y=3",
+  "initial_point": [
+    0.5,
+    2.5
+  ],
+  "bounds": [
+    -5,
+    5
+  ],
+  "optimal_x": [
+    1,
+    2
+  ],
+  "optimal_objective": 0,
+  "solution_tolerance": 0.001,
+  "constraint_tolerance": 1e-05
+}
