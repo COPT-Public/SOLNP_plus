@@ -1,0 +1,33 @@
+SOLNP_plus — Linux build, installation and verification
+==================================================
+
+Validated configuration: Ubuntu 22.04.5 x86_64, GCC/G++ 11.4.0,
+CMake 3.30.5, Python 3.10.12, NumPy 1.26.4.
+C compiler, CMake >=3.20, BLAS/LAPACK, Python 3 and NumPy. Bundled OSQP 0.6.3/QDLDL is built automatically. MATLAB and a GPU are not needed.
+
+1. Install compiler/build tools and the listed system development dependencies.
+   On Ubuntu the common packages are build-essential and python3-pip.
+   For this project also install libblas-dev liblapack-dev.
+   No sudo command is executed by this package's build.sh.
+
+2. From the package root, install private test/build tooling if needed:
+   python3 -m pip install --target "$PWD/.coinor-deps/python" numpy==1.26.4 cmake==3.30.5
+   export PYTHONPATH="$PWD/.coinor-deps/python${PYTHONPATH:+:$PYTHONPATH}"
+   export CMAKE="$PWD/.coinor-deps/python/cmake/data/bin/cmake"
+
+3. Run: bash build.sh
+   Bundled OSQP is built into .coinor-deps/osqp/ unless OSQP_HOME is supplied.
+   SOLNP is installed into .coinor-deps/solnp-install/ (lib and include).
+   The script runs CTest, the numerical checker, and an installed-library consumer.
+   To rerun the final check: bash tests/check_installed.sh
+   For non-system BLAS/LAPACK, set CMAKE_LIBRARY_PATH and LD_LIBRARY_PATH to
+   their library directories before building. Keep the OSQP/BLAS libraries
+   available at runtime. MATLAB is not part of this verified workflow.
+
+All build/test commands return nonzero on failure. Numerical reports under
+tests/logs/ contain pass=true on success, with per-invocation raw output folders.
+The negative checker regression deliberately induces failures and succeeds only
+when those failures are detected. Do not count its induced solver failures as
+successful solves. See tests/README.md for expected answers and adding tests.
+No network is needed for the bundled HiGHS/OSQP source builds; installing external
+tooling and dependencies may require network access. Only source is shipped.

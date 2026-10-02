@@ -1,0 +1,17 @@
+{
+  "project": "SOLNP_plus",
+  "timestamp_utc": "2026-09-30T17:46:31.473061+00:00",
+  "host": "gpu4090",
+  "primal_feasibility_tolerance": 1e-06,
+  "pass": true,
+  "status": 1,
+  "x": [
+    1.0000000000000004,
+    2.0000000000000004
+  ],
+  "objective": 3.944304526105059e-31,
+  "constraint_residual": 8.881784197001252e-16,
+  "primal_residual": 8.881784197001252e-16,
+  "solver_exit": 0,
+  "run_directory": "/home/hkliu/codex-coinor-release-20261001-r2/SOLNP_plus-coinor-20261001-r2/tests/logs/tiny/run-fuojdm12"
+}

@@ -1,0 +1,9 @@
+SOLNP_plus
+https://arxiv.org/abs/2210.07160
+
+Reference-paper authors:
+Dongdong Ge
+Tianhao Liu
+Jinsong Liu
+Jiyuan Tan
+Yinyu Ye

@@ -1,0 +1,36 @@
+SOLNP_plus
+
+Project manager: Tianhao Liu <tianhao.liu@sjtu.edu.cn>
+
+Reference-paper authors (publication order; verified 2026-10-01):
+Dongdong Ge
+Tianhao Liu
+Jinsong Liu
+Jiyuan Tan
+Yinyu Ye
+
+Primary reference:
+SOLNP+: A Derivative-Free Solver for Constrained Nonlinear Optimization
+https://arxiv.org/abs/2210.07160
+
+The paper-author list records research attribution. Significant code
+contributors must also be identified and retained; paper authorship alone
+does not establish copyright ownership. Existing code credits follow.
+
+Previously documented upstream / earlier-version attribution
+----------------------------------------------------------
+Credits documented by upstream:
+Jiyuan Tan, Tianhao Liu, Jinsong Liu (upstream README development team); Yinyu Ye (original SOLNP algorithm).
+
+Public Git author identities (aliases may refer to the same person):
+COPT-Public <102135768+COPT-Public@users.noreply.github.com>
+JinsongLiu <77163497+JinsongLiu6@users.noreply.github.com>
+JinsongLiu6 <liujinsong@163.sufe.edu.cn>
+Jiyuan Tan <tan1159430816@gmail.com>
+Tank <1159430816@qq.com>
+wyc <wuyancheng@sjtu.edu.cn>
+
+These identities are retained only as historical provenance and do not determine
+the package author list. The root AUTHORS file follows the reference-paper
+authors in publication order. This file is not a declaration of copyright
+ownership.
